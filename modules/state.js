@@ -46,3 +46,4 @@ export function setAllEvidence(val) { allEvidence = val; }
 export function setLoadingStepsRemaining(val) { loadingStepsRemaining = val; }
 export function setCurrentPage(val) { currentPage = val; }
 export function setCurrentPeopleTab(val) { currentPeopleTab = val; }
+export function setEvidenceViewLoading(value) { evidenceViewLoading = value; }

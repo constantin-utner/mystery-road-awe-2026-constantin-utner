@@ -2,7 +2,7 @@ import {
     allEvidence, loadingStepsRemaining, currentPage,
     setCaseData, setAllPeople, setAllLocations, setAllTimeline,
     setAllEvidence, setLoadingStepsRemaining,
-    setFilteredEvidence
+    setFilteredEvidence, setEvidenceViewLoading
 } from "./state.js";
 import { renderDashboard } from "./dashboard.js";
 import { applyStoredBookmarkFlags, renderEvidenceList, populateEvidenceDropdowns } from "./evidence.js";
@@ -67,6 +67,7 @@ function loadEvidenceData() {
         })
         .then(function (data) {
             setAllEvidence(data);
+            setEvidenceViewLoading(false);
             applyStoredBookmarkFlags();
             setFilteredEvidence([...allEvidence]);
             renderDashboard();
