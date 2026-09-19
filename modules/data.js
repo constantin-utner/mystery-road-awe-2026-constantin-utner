@@ -55,39 +55,35 @@ async function loadCorePeopleAndLocations() {
     populateAllDropdowns();
 }
 
-function loadEvidenceData() {
-    return fetch("data/evidence.json")
-        .then(function (res) {
-            return res.json();
-        })
-        .then(function (data) {
-            const reviews = loadEvidenceReviews();
-            const normalizedData = data.map(ev => {
-                const review = reviews[ev.id] || {};
-                return {
-                    ...ev,
-                    type: ev.type.toLowerCase(),
-                    status: ["unreviewed", "reviewed", "flagged"].includes(review.status)
-                        ? review.status : ev.status,
-                    relevance: ["unknown", "relevant", "irrelevant"].includes(review.relevance)
-                        ? review.relevance : ev.relevance
-                };
-            });
-            setAllEvidence(normalizedData);
-            setEvidenceViewLoading(false);
-            applyStoredBookmarkFlags();
-            setFilteredEvidence([...allEvidence]);
-            renderDashboard();
-            populateAllDropdowns();
-            if (currentPage === "evidence") renderEvidenceList();
-        })
-        .catch(function (err) {
-            console.error("Failed to load evidence.json", err);
-            alert("Evidence could not be loaded. Some views may be incomplete.");
-        })
-        .finally(function () {
-            hideLoadingStep();
+async function loadEvidenceData() {
+    try {
+        const res = await fetch("data/evidence.json");
+        const data = await res.json();
+        const reviews = loadEvidenceReviews();
+        const normalizedData = data.map(ev => {
+            const review = reviews[ev.id] || {};
+            return {
+                ...ev,
+                type: ev.type.toLowerCase(),
+                status: ["unreviewed", "reviewed", "flagged"].includes(review.status)
+                    ? review.status : ev.status,
+                relevance: ["unknown", "relevant", "irrelevant"].includes(review.relevance)
+                    ? review.relevance : ev.relevance
+            };
         });
+        setAllEvidence(normalizedData);
+        setEvidenceViewLoading(false);
+        applyStoredBookmarkFlags();
+        setFilteredEvidence([...allEvidence]);
+        renderDashboard();
+        populateAllDropdowns();
+        if (currentPage === "evidence") renderEvidenceList();
+    } catch (err) {
+        console.error("Failed to load evidence.json", err);
+        alert("Evidence could not be loaded. Some views may be incomplete.");
+    } finally {
+        hideLoadingStep();
+    }
 }
 
 function loadTimelineData() {
