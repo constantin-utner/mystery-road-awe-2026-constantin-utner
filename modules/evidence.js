@@ -1,5 +1,5 @@
 import {
-    allEvidence, allPeople, allLocations, filteredEvidence,
+    allEvidence, allPeople, allLocations,
     bookmarks, currentPage, evidenceViewLoading, viewRendered,
     setFilteredEvidence, setBookmarks, setSelectedEvidence
 } from "./state.js";
@@ -75,6 +75,22 @@ function getFilteredEvidence() {
     return results;
 }
 
+function getSortedEvidence(items, sortValue) {
+    var sorted = [...items];
+
+    if (sortValue === "title-asc") {
+        sorted.sort(function (a, b) { return a.title.localeCompare(b.title); });
+    } else if (sortValue === "title-desc") {
+        sorted.sort(function (a, b) { return b.title.localeCompare(a.title); });
+    } else if (sortValue === "date-asc") {
+        sorted.sort(function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
+    } else {
+        sorted.sort(function (a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+    }
+
+    return sorted;
+}
+
 export function renderEvidenceList() {
     var container = document.getElementById("evidenceList");
     if (!container) return;
@@ -87,7 +103,9 @@ export function renderEvidenceList() {
     }
     if (loadingIndicator) loadingIndicator.classList.add("hidden");
 
-    var results = getFilteredEvidence();
+    var filtered = getFilteredEvidence();
+    var sortValue = document.getElementById("sortEvidence").value;
+    var results = getSortedEvidence(filtered, sortValue);
 
     var html = "";
     if (results.length === 0) {
@@ -162,17 +180,6 @@ export function applyStoredBookmarkFlags() {
 }
 
 export function handleSortChange() {
-    var sortValue = document.getElementById("sortEvidence").value;
-
-    if (sortValue === "title-asc") {
-        filteredEvidence.sort(function (a, b) { return a.title.localeCompare(b.title); });
-    } else if (sortValue === "title-desc") {
-        filteredEvidence.sort(function (a, b) { return b.title.localeCompare(a.title); });
-    } else if (sortValue === "date-asc") {
-        filteredEvidence.sort(function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
-    } else {
-        filteredEvidence.sort(function (a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
-    }
     renderEvidenceList();
 }
 
