@@ -79,7 +79,7 @@ function getSortedEvidence(items, sortValue) {
     const sorted = [...items]; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
 
     if (sortValue === "title-asc") {
-        sorted.sort(function (a, b) { return a.title.localeCompare(b.title); });
+        sorted.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortValue === "title-desc") {
         sorted.sort(function (a, b) { return b.title.localeCompare(a.title); });
     } else if (sortValue === "date-asc") {

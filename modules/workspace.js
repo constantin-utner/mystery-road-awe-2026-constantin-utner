@@ -21,9 +21,7 @@ function renderBookmarksList() {
     const container = document.getElementById("bookmarksList"); // const: DOM-Referenz wird nicht neu zugewiesen.
     if (!container) return;
 
-    const bookmarkedItems = allEvidence.filter(function (ev) { // const: Bindung wird nicht neu zugewiesen.
-        return ev.bookmarked;
-    });
+    const bookmarkedItems = allEvidence.filter(ev => ev.bookmarked); // const: Bindung wird nicht neu zugewiesen.
 
     if (bookmarkedItems.length === 0) {
         container.innerHTML = "<p>No bookmarked evidence yet. Bookmark items from the Evidence view.</p>";
