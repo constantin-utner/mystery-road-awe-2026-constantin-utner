@@ -14,21 +14,21 @@ import navigateTo from "./modules/navigation.js";
 // ---------------------------------------------------------------------
 
 function handleHashChange() {
-    var hash = window.location.hash.replace("#", "");
-    var validViews = ["dashboard", "evidence", "people", "timeline", "workspace"];
+    let hash = window.location.hash.replace("#", ""); // let: Ungültiger Hash wird durch dashboard ersetzt.
+    const validViews = ["dashboard", "evidence", "people", "timeline", "workspace"]; // const: Bindung wird nicht neu zugewiesen.
     if (validViews.indexOf(hash) === -1) {
         hash = "dashboard";
     }
     setCurrentPage(hash);
 
-    var sections = document.querySelectorAll(".view");
-    for (var i = 0; i < sections.length; i++) {
+    const sections = document.querySelectorAll(".view"); // const: DOM-Referenz wird nicht neu zugewiesen.
+    for (let i = 0; i < sections.length; i++) { // let: Schleifenzähler wird erhöht.
         sections[i].classList.remove("active");
     }
     document.getElementById("view-" + hash).classList.add("active");
 
-    var navButtons = document.querySelectorAll(".nav-btn");
-    for (var n = 0; n < navButtons.length; n++) {
+    const navButtons = document.querySelectorAll(".nav-btn"); // const: DOM-Referenz wird nicht neu zugewiesen.
+    for (let n = 0; n < navButtons.length; n++) { // let: Schleifenzähler wird erhöht.
         navButtons[n].classList.remove("active");
         if (navButtons[n].getAttribute("data-view") === hash) {
             navButtons[n].classList.add("active");
@@ -61,10 +61,10 @@ function handleHashChange() {
 function setupEventListeners() {
     window.addEventListener("hashchange", handleHashChange);
 
-    var navButtons = document.querySelectorAll(".nav-btn");
+    const navButtons = document.querySelectorAll(".nav-btn"); // const: DOM-Referenz wird nicht neu zugewiesen.
     for (let i = 0; i < navButtons.length; i++) {
         navButtons[i].addEventListener("click", function () {
-            var targetView = navButtons[i].getAttribute("data-view");
+            const targetView = navButtons[i].getAttribute("data-view"); // const: Bindung wird nicht neu zugewiesen.
             console.log("nav clicked:", targetView);
         });
     }
@@ -103,7 +103,7 @@ function initApp() {
 
     loadAllData().then(function () {
         handleHashChange();
-        var firstNote = loadNoteAsync("E01").then(firstNote => console.log("First note preview:", firstNote))
+        const firstNote = loadNoteAsync("E01").then(firstNote => console.log("First note preview:", firstNote)) // const: Bindung wird nicht neu zugewiesen.
     });
 }
 

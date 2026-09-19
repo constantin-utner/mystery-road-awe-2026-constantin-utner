@@ -19,8 +19,8 @@ export function saveBookmarksToStorage() {
 
 export function loadBookmarksFromStorage() {
     try {
-        var raw = localStorage.getItem(STORAGE_KEY_BOOKMARKS);
-        var parsed = raw ? JSON.parse(raw) : [];
+        const raw = localStorage.getItem(STORAGE_KEY_BOOKMARKS); // const: Bindung wird nicht neu zugewiesen.
+        const parsed = raw ? JSON.parse(raw) : []; // const: Bindung wird nicht neu zugewiesen.
         setBookmarks(Array.isArray(parsed) ? parsed : []);
     } catch (err) {
         console.warn("Could not read stored bookmarks, starting empty", err);
@@ -39,8 +39,8 @@ export function loadNoteForEvidence(evidenceId) {
 
 export function loadNotesFromStorage() {
     try {
-        var raw = localStorage.getItem(STORAGE_KEY_NOTES);
-        var parsed = raw ? JSON.parse(raw) : {};
+        const raw = localStorage.getItem(STORAGE_KEY_NOTES); // const: Bindung wird nicht neu zugewiesen.
+        const parsed = raw ? JSON.parse(raw) : {}; // const: Bindung wird nicht neu zugewiesen.
         if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
             throw new Error("Stored notes must be an object");
         }
@@ -53,7 +53,7 @@ export function loadNotesFromStorage() {
 
 export function loadEvidenceReviews() {
     try {
-        var value = JSON.parse(localStorage.getItem(STORAGE_KEY_EVIDENCE_REVIEW) || "{}");
+        const value = JSON.parse(localStorage.getItem(STORAGE_KEY_EVIDENCE_REVIEW) || "{}"); // const: Bindung wird nicht neu zugewiesen.
         return value && typeof value === "object" && !Array.isArray(value) ? value : {};
     } catch (err) {
         console.warn("Could not read stored evidence reviews, starting empty", err);
@@ -62,7 +62,7 @@ export function loadEvidenceReviews() {
 }
 
 export function saveEvidenceReview(ev) {
-    var reviews = loadEvidenceReviews();
+    const reviews = loadEvidenceReviews(); // const: Objekt-Inhalt darf sich ändern; Bindung bleibt gleich.
     reviews[ev.id] = { status: ev.status, relevance: ev.relevance };
     localStorage.setItem(STORAGE_KEY_EVIDENCE_REVIEW, JSON.stringify(reviews));
 }

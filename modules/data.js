@@ -15,8 +15,8 @@ import { loadEvidenceReviews } from "./storage.js";
 // ---------------------------------------------------------------------
 
 function showLoadingOverlay(msg) {
-    var overlay = document.getElementById("loadingOverlay");
-    var text = document.getElementById("loadingText");
+    const overlay = document.getElementById("loadingOverlay"); // const: DOM-Referenz wird nicht neu zugewiesen.
+    const text = document.getElementById("loadingText"); // const: DOM-Referenz wird nicht neu zugewiesen.
     if (text) text.textContent = msg;
     if (overlay) overlay.classList.remove("hidden");
 }
@@ -24,7 +24,7 @@ function showLoadingOverlay(msg) {
 function hideLoadingStep() {
     setLoadingStepsRemaining(loadingStepsRemaining - 1);
     if (loadingStepsRemaining <= 0) {
-        var overlay = document.getElementById("loadingOverlay");
+        const overlay = document.getElementById("loadingOverlay"); // const: DOM-Referenz wird nicht neu zugewiesen.
         if (overlay) overlay.classList.add("hidden");
     }
 }

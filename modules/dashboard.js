@@ -10,17 +10,17 @@ function statCardHTML(value, label) {
 }
 
 export function renderDashboard() {
-    var container = document.getElementById("dashboardContent");
+    const container = document.getElementById("dashboardContent"); // const: DOM-Referenz wird nicht neu zugewiesen.
     if (!container) return;
 
-    var reviewedCount = 0;
-    for (var i = 0; i < allEvidence.length; i++) {
+    let reviewedCount = 0; // let: Zähler wird erhöht.
+    for (let i = 0; i < allEvidence.length; i++) { // let: Schleifenzähler wird erhöht.
         if ((allEvidence[i].status || "").toLowerCase() === "reviewed") reviewedCount++;
     }
 
-    var progressPct = allEvidence.length === 0 ? 0 : Math.round((reviewedCount / allEvidence.length) * 100);
+    const progressPct = allEvidence.length === 0 ? 0 : Math.round((reviewedCount / allEvidence.length) * 100); // const: Bindung wird nicht neu zugewiesen.
 
-    var html = "";
+    let html = ""; // let: HTML-Text wird schrittweise erweitert.
     html += '<div class="case-summary-card">';
     html += "<h3>" + (caseData.title || "Case") + "</h3>";
     html += '<p><span class="badge badge-flagged">' + (caseData.status || "unknown").toUpperCase() + "</span></p>";
@@ -44,24 +44,24 @@ export function renderDashboard() {
     html += '<div class="dashboard-columns">';
 
     html += '<div class="dashboard-panel"><h3>Recent evidence</h3>';
-    var recentEvidence = allEvidence.slice(-5).reverse();
+    const recentEvidence = allEvidence.slice(-5).reverse(); // const: Bindung wird nicht neu zugewiesen.
     if (recentEvidence.length === 0) {
         html += "<p>No evidence loaded yet.</p>";
     }
-    for (var e = 0; e < recentEvidence.length; e++) {
-        var ev = recentEvidence[e];
+    for (let e = 0; e < recentEvidence.length; e++) { // let: Schleifenzähler wird erhöht.
+        const ev = recentEvidence[e]; // const: Bindung wird nicht neu zugewiesen.
         html += '<div class="mini-list-item"><strong>' + ev.id + "</strong> &mdash; " + ev.title +
             ' <span class="badge ' + getStatusBadgeClass(ev.status) + '">' + ev.status + "</span></div>";
     }
     html += "</div>";
 
     html += '<div class="dashboard-panel"><h3>Recent timeline events</h3>';
-    var recentTimeline = allTimeline.slice(-5).reverse();
+    const recentTimeline = allTimeline.slice(-5).reverse(); // const: Bindung wird nicht neu zugewiesen.
     if (recentTimeline.length === 0) {
         html += "<p>No timeline events loaded yet.</p>";
     }
-    for (var t = 0; t < recentTimeline.length; t++) {
-        var evt = recentTimeline[t];
+    for (let t = 0; t < recentTimeline.length; t++) { // let: Schleifenzähler wird erhöht.
+        const evt = recentTimeline[t]; // const: Bindung wird nicht neu zugewiesen.
         html += '<div class="mini-list-item"><strong>' + formatDate(evt.time) + "</strong><br>" + evt.title + "</div>";
     }
     html += "</div>";
