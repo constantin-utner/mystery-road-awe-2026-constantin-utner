@@ -66,7 +66,11 @@ function loadEvidenceData() {
             return res.json();
         })
         .then(function (data) {
-            setAllEvidence(data);
+            const normalizedData = data.map(ev => ({
+                ...ev,
+                type: ev.type.toLowerCase()
+            }));
+            setAllEvidence(normalizedData);
             setEvidenceViewLoading(false);
             applyStoredBookmarkFlags();
             setFilteredEvidence([...allEvidence]);
