@@ -1,6 +1,7 @@
 import {
     STORAGE_KEY_BOOKMARKS,
     STORAGE_KEY_NOTES,
+    STORAGE_KEY_EVIDENCE_REVIEW,
     notesStore,
     bookmarks,
     setBookmarks,
@@ -8,7 +9,7 @@ import {
 } from "./state.js";
 
 // ---------------------------------------------------------------------
-// LOCAL STORAGE HELPERS (bookmarks & notes)
+// LOCAL STORAGE HELPERS (bookmarks, notes & evidence reviews)
 // ---------------------------------------------------------------------
 
 
@@ -43,6 +44,22 @@ export function loadNotesFromStorage() {
         return;
     }
     setNotesStore(JSON.parse(raw));
+}
+
+export function loadEvidenceReviews() {
+    try {
+        var value = JSON.parse(localStorage.getItem(STORAGE_KEY_EVIDENCE_REVIEW) || "{}");
+        return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (err) {
+        console.warn("Could not read stored evidence reviews, starting empty", err);
+        return {};
+    }
+}
+
+export function saveEvidenceReview(ev) {
+    var reviews = loadEvidenceReviews();
+    reviews[ev.id] = { status: ev.status, relevance: ev.relevance };
+    localStorage.setItem(STORAGE_KEY_EVIDENCE_REVIEW, JSON.stringify(reviews));
 }
 
 export function loadNoteAsync(evidenceId) {

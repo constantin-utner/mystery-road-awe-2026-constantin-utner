@@ -31,6 +31,7 @@ export let modalCloseListenerCount = 0;
 export const STORAGE_KEY_BOOKMARKS = "remotion_bookmarks";
 export const STORAGE_KEY_NOTES = "remotion_notes";
 export const STORAGE_KEY_HYPOTHESIS = "remotion_hypothesis";
+export const STORAGE_KEY_EVIDENCE_REVIEW = "remotion_evidence_review";
 
 // SETTERS
 export function setBookmarks(val) { bookmarks = val; }

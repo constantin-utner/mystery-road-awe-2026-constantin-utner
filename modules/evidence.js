@@ -8,7 +8,7 @@ import {
     formatDate, getStatusBadgeClass, getRelevanceBadgeClass,
     evidenceMentionsPerson
 } from "./utils.js";
-import { saveBookmarksToStorage, loadNoteForEvidence, saveNoteForEvidence } from "./storage.js";
+import { saveBookmarksToStorage, loadNoteForEvidence, saveNoteForEvidence, saveEvidenceReview } from "./storage.js";
 
 // ---------------------------------------------------------------------
 // EVIDENCE CATALOGUE
@@ -298,11 +298,13 @@ function renderEvidenceDetail(ev) {
 
     document.getElementById("detailStatusSelect").addEventListener("change", function (e) {
         ev.status = e.target.value;
+        saveEvidenceReview(ev);
         renderEvidenceDetail(ev);
         if (viewRendered.evidence) renderEvidenceList();
     });
     document.getElementById("detailRelevanceSelect").addEventListener("change", function (e) {
         ev.relevance = e.target.value;
+        saveEvidenceReview(ev);
         renderEvidenceDetail(ev);
         if (viewRendered.evidence) renderEvidenceList();
     });

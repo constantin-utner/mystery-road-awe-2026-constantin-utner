@@ -8,6 +8,7 @@ import { renderDashboard } from "./dashboard.js";
 import { applyStoredBookmarkFlags, renderEvidenceList, populateEvidenceDropdowns } from "./evidence.js";
 import { populateTimelineDropdowns, renderTimeline } from "./timeline.js";
 import { populateHypothesisDropdowns } from "./workspace.js";
+import { loadEvidenceReviews } from "./storage.js";
 
 // ---------------------------------------------------------------------
 // DATA LOADING
@@ -66,10 +67,18 @@ function loadEvidenceData() {
             return res.json();
         })
         .then(function (data) {
-            const normalizedData = data.map(ev => ({
-                ...ev,
-                type: ev.type.toLowerCase()
-            }));
+            const reviews = loadEvidenceReviews();
+            const normalizedData = data.map(ev => {
+                const review = reviews[ev.id] || {};
+                return {
+                    ...ev,
+                    type: ev.type.toLowerCase(),
+                    status: ["unreviewed", "reviewed", "flagged"].includes(review.status)
+                        ? review.status : ev.status,
+                    relevance: ["unknown", "relevant", "irrelevant"].includes(review.relevance)
+                        ? review.relevance : ev.relevance
+                };
+            });
             setAllEvidence(normalizedData);
             setEvidenceViewLoading(false);
             applyStoredBookmarkFlags();
