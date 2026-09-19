@@ -65,6 +65,7 @@ export function renderTimeline() {
         html += '<div class="timeline-event certainty-' + item.certainty + '">';
         html += '<div class="timeline-time">' + formatDate(item.time) + '&nbsp;&middot;&nbsp;<span class="badge badge-' + certaintyBadgeClass(item.certainty) + '">' + item.certainty + "</span></div>";
         html += "<h3>" + item.title + "</h3>";
+        html += '<p class="evidence-meta">Event type: ' + item.type + "</p>";
         html += "<p>" + item.description + "</p>";
 
         var eventLocationNames = [];
