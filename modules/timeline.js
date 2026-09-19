@@ -69,8 +69,11 @@ export function renderTimeline() {
 
         var eventLocationNames = [];
         for (var el = 0; el < item.locationIds.length; el++) {
-            var evtLoc = findLocationById(item.locationIds[el]);
-            eventLocationNames.push(evtLoc || item.locationIds[el]);
+            var locationId = item.locationIds[el];
+            var evtLoc = findLocationById(locationId);
+            eventLocationNames.push(
+                evtLoc ? evtLoc.id + " - " + evtLoc.name : locationId
+            );
         }
         if (eventLocationNames.length > 0) {
             html += '<p class="evidence-meta">Location: ' + eventLocationNames.join(", ") + "</p>";
