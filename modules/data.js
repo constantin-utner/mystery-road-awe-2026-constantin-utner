@@ -37,28 +37,22 @@ function populateAllDropdowns() {
     populateHypothesisDropdowns();
 }
 
-function loadCorePeopleAndLocations() {
-    return fetch("data/case.json").then(function (caseRes) {
-        return caseRes.json().then(function (caseJson) {
-            setCaseData(caseJson);
+async function loadCorePeopleAndLocations() {
+    const caseRes = await fetch("data/case.json");
+    const caseJson = await caseRes.json();
+    setCaseData(caseJson);
 
-            return fetch("data/people.json").then(function (peopleRes) {
-                return peopleRes.json().then(function (peopleJson) {
-                    setAllPeople(peopleJson);
+    const peopleRes = await fetch("data/people.json");
+    const peopleJson = await peopleRes.json();
+    setAllPeople(peopleJson);
 
-                    return fetch("data/locations.json").then(function (locationsRes) {
-                        return locationsRes.json().then(function (locationsJson) {
-                            setAllLocations(locationsJson);
+    const locationsRes = await fetch("data/locations.json");
+    const locationsJson = await locationsRes.json();
+    setAllLocations(locationsJson);
 
-                            hideLoadingStep();
-                            renderDashboard();
-                            populateAllDropdowns();
-                        });
-                    });
-                });
-            });
-        });
-    });
+    hideLoadingStep();
+    renderDashboard();
+    populateAllDropdowns();
 }
 
 function loadEvidenceData() {
