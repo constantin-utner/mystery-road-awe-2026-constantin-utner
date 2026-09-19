@@ -170,6 +170,7 @@ function handleBookmarkClick(evidenceId) {
         ev.bookmarked = false;
     }
     saveBookmarksToStorage();
+    viewRendered.dashboard = false;
     if (currentPage === "evidence") renderEvidenceList();
 }
 
@@ -299,6 +300,7 @@ function renderEvidenceDetail(ev) {
     document.getElementById("detailStatusSelect").addEventListener("change", function (e) {
         ev.status = e.target.value;
         saveEvidenceReview(ev);
+        viewRendered.dashboard = false;
         renderEvidenceDetail(ev);
         if (viewRendered.evidence) renderEvidenceList();
     });
