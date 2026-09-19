@@ -38,12 +38,17 @@ export function loadNoteForEvidence(evidenceId) {
 }
 
 export function loadNotesFromStorage() {
-    var raw = localStorage.getItem(STORAGE_KEY_NOTES);
-    if (!raw) {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY_NOTES);
+        var parsed = raw ? JSON.parse(raw) : {};
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+            throw new Error("Stored notes must be an object");
+        }
+        setNotesStore(parsed);
+    } catch (err) {
+        console.warn("Could not read stored notes, starting empty", err);
         setNotesStore({});
-        return;
     }
-    setNotesStore(JSON.parse(raw));
 }
 
 export function loadEvidenceReviews() {
