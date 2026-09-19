@@ -115,7 +115,23 @@ function openEvidenceModal(evidenceId) {
         modal = document.createElement("div");
         modal.id = "quickViewModal";
         document.body.appendChild(modal);
+
+        modal.addEventListener("click", function (e) {
+            if (e.target.classList.contains("modal-close-btn") || e.target.classList.contains("modal-backdrop")) {
+                modal.innerHTML = "";
+            }
+            if (e.target.getAttribute && e.target.getAttribute("data-open-full")) {
+                modal.innerHTML = "";
+                navigateTo("evidence");
+                setTimeout(function () {
+                    openEvidenceDetail(e.target.getAttribute("data-open-full"));
+                }, 0);
+            }
+        });
+        setModalCloseListenerCount(modalCloseListenerCount + 1);
     }
+
+    console.log("modal opened, active close listeners:", modalCloseListenerCount);
 
     modal.innerHTML =
         '<div class="modal-backdrop"><div class="modal-box">' +
@@ -125,20 +141,4 @@ function openEvidenceModal(evidenceId) {
         "<p>" + ev.summary + "</p>" +
         '<button type="button" class="btn btn-primary btn-small" data-open-full="' + ev.id + '">Open full evidence</button>' +
         "</div></div>";
-
-    setModalCloseListenerCount(modalCloseListenerCount + 1);
-    console.log("modal opened, active close listeners:", modalCloseListenerCount);
-
-    modal.addEventListener("click", function (e) {
-        if (e.target.classList.contains("modal-close-btn") || e.target.classList.contains("modal-backdrop")) {
-            modal.innerHTML = "";
-        }
-        if (e.target.getAttribute && e.target.getAttribute("data-open-full")) {
-            modal.innerHTML = "";
-            navigateTo("evidence");
-            setTimeout(function () {
-                openEvidenceDetail(e.target.getAttribute("data-open-full"));
-            }, 0);
-        }
-    });
 }
