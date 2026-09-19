@@ -81,11 +81,11 @@ function getSortedEvidence(items, sortValue) {
     if (sortValue === "title-asc") {
         sorted.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortValue === "title-desc") {
-        sorted.sort(function (a, b) { return b.title.localeCompare(a.title); });
+        sorted.sort((a, b) => b.title.localeCompare(a.title));
     } else if (sortValue === "date-asc") {
-        sorted.sort(function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
+        sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     } else {
-        sorted.sort(function (a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+        sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
 
     return sorted;
