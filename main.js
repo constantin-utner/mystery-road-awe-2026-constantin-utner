@@ -76,7 +76,6 @@ function setupEventListeners() {
     document.getElementById("filterLocation").addEventListener("change", renderEvidenceList);
 
     document.getElementById("filterStatus").addEventListener("change", renderEvidenceList);
-    document.getElementById("filterStatus").setAttribute("onchange", "renderEvidenceList()");
 
     document.getElementById("filterRelevance").addEventListener("change", renderEvidenceList);
 
@@ -120,4 +119,3 @@ window.handleSortChange = handleSortChange;
 window.saveHypothesis = saveHypothesis;
 window.closeEvidenceDetail = closeEvidenceDetail;
 window.saveCurrentNote = saveCurrentNote;
-window.renderEvidenceList = renderEvidenceList;
