@@ -1,0 +1,20 @@
+{
+  "name": "mystery-road-awe-2026",
+  "version": "1.0.0",
+  "description": "Investigate the failure of an AI-assisted rehabilitation robot.",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/constantin-utner/mystery-road-awe-2026-constantin-utner.git"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/constantin-utner/mystery-road-awe-2026-constantin-utner/issues"
+  },
+  "homepage": "https://github.com/constantin-utner/mystery-road-awe-2026-constantin-utner#readme",
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}
