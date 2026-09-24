@@ -4,7 +4,11 @@
   "description": "Investigate the failure of an AI-assisted rehabilitation robot.",
   "private": true,
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/constantin-utner/mystery-road-awe-2026-constantin-utner.git"
