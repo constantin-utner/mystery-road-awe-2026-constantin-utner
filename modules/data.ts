@@ -20,19 +20,26 @@ import {
 import { populateTimelineDropdowns, renderTimeline } from "./timeline.js";
 import { populateHypothesisDropdowns } from "./workspace.js";
 import { loadEvidenceReviews } from "./storage.js";
+import type {
+  CaseData,
+  Evidence,
+  Location,
+  Person,
+  TimelineEvent,
+} from "./domain.js";
 
 // ---------------------------------------------------------------------
 // DATA LOADING
 // ---------------------------------------------------------------------
 
-function showLoadingOverlay(msg) {
+function showLoadingOverlay(message: string): void {
   const overlay = document.getElementById("loadingOverlay"); // const: DOM-Referenz wird nicht neu zugewiesen.
   const text = document.getElementById("loadingText"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  if (text) text.textContent = msg;
+  if (text) text.textContent = message;
   if (overlay) overlay.classList.remove("hidden");
 }
 
-function hideLoadingStep() {
+function hideLoadingStep(): void {
   setLoadingStepsRemaining(loadingStepsRemaining - 1);
   if (loadingStepsRemaining <= 0) {
     const overlay = document.getElementById("loadingOverlay"); // const: DOM-Referenz wird nicht neu zugewiesen.
@@ -42,23 +49,23 @@ function hideLoadingStep() {
 
 // Placed here instead of evidence.js to avoid a circular import
 // (evidence.js <-> timeline.js/workspace.js).
-function populateAllDropdowns() {
+function populateAllDropdowns(): void {
   populateEvidenceDropdowns();
   populateTimelineDropdowns();
   populateHypothesisDropdowns();
 }
 
-async function loadCorePeopleAndLocations() {
-  const caseRes = await fetch("data/case.json");
-  const caseJson = await caseRes.json();
+async function loadCorePeopleAndLocations(): Promise<void> {
+  const caseResponse = await fetch("data/case.json");
+  const caseJson: CaseData = await caseResponse.json();
   setCaseData(caseJson);
 
-  const peopleRes = await fetch("data/people.json");
-  const peopleJson = await peopleRes.json();
+  const peopleResponse = await fetch("data/people.json");
+  const peopleJson: Person[] = await peopleResponse.json();
   setAllPeople(peopleJson);
 
-  const locationsRes = await fetch("data/locations.json");
-  const locationsJson = await locationsRes.json();
+  const locationsResponse = await fetch("data/locations.json");
+  const locationsJson: Location[] = await locationsResponse.json();
   setAllLocations(locationsJson);
 
   hideLoadingStep();
@@ -66,24 +73,18 @@ async function loadCorePeopleAndLocations() {
   populateAllDropdowns();
 }
 
-async function loadEvidenceData() {
+async function loadEvidenceData(): Promise<void> {
   try {
-    const res = await fetch("data/evidence.json");
-    const data = await res.json();
+    const response = await fetch("data/evidence.json");
+    const data: Evidence[] = await response.json();
     const reviews = loadEvidenceReviews();
-    const normalizedData = data.map((ev) => {
-      const review = reviews[ev.id] || {};
+    const normalizedData = data.map((evidence) => {
+      const review = reviews[evidence.id];
       return {
-        ...ev,
-        type: ev.type.toLowerCase(),
-        status: ["unreviewed", "reviewed", "flagged"].includes(review.status)
-          ? review.status
-          : ev.status,
-        relevance: ["unknown", "relevant", "irrelevant"].includes(
-          review.relevance,
-        )
-          ? review.relevance
-          : ev.relevance,
+        ...evidence,
+        type: evidence.type.toLowerCase(),
+        status: review?.status ?? evidence.status,
+        relevance: review?.relevance ?? evidence.relevance,
       };
     });
     setAllEvidence(normalizedData);
@@ -101,12 +102,12 @@ async function loadEvidenceData() {
   }
 }
 
-function loadTimelineData() {
+function loadTimelineData(): Promise<void> {
   return fetch("data/timeline.json")
-    .then(function (res) {
-      return res.json();
+    .then(function (response): Promise<TimelineEvent[]> {
+      return response.json();
     })
-    .then(function (data) {
+    .then(function (data: TimelineEvent[]): void {
       setAllTimeline(data);
       renderDashboard();
       populateAllDropdowns();
@@ -120,10 +121,9 @@ function loadTimelineData() {
     });
 }
 
-export function loadAllData() {
+export async function loadAllData(): Promise<void> {
   showLoadingOverlay("Loading case file…");
   setLoadingStepsRemaining(3);
-  return loadCorePeopleAndLocations().then(function () {
-    return Promise.all([loadEvidenceData(), loadTimelineData()]);
-  });
+  await loadCorePeopleAndLocations();
+  await Promise.all([loadEvidenceData(), loadTimelineData()]);
 }
