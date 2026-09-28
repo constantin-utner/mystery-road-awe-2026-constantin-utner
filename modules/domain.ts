@@ -4,6 +4,14 @@ export type EvidenceRelevance = "unknown" | "relevant" | "irrelevant";
 
 export type TimelineCertainty = "confirmed" | "contradictory" | "reported";
 
+export type PersonId =
+  | "signal-scholar"
+  | "kernel-colt"
+  | "nova-byte"
+  | "patch-vector"
+  | "refactor-rex"
+  | "root-harbor";
+
 export type Evidence = {
   id: string;
   type: string;
@@ -11,7 +19,7 @@ export type Evidence = {
   timestamp: string;
   summary: string;
   content: string;
-  personIds: string[];
+  personIds: PersonId[];
   locationIds: string[];
   tags: string[];
   status: EvidenceStatus;
@@ -20,7 +28,7 @@ export type Evidence = {
 };
 
 export type Person = {
-  id: string;
+  id: PersonId;
   name: string;
   role: string;
   speciality: string;
@@ -44,7 +52,7 @@ export type TimelineEvent = {
   description: string;
   type: string;
   certainty: TimelineCertainty;
-  personIds: string[];
+  personIds: PersonId[];
   locationIds: string[];
   evidenceIds: string[];
 };
