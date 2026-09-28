@@ -24,7 +24,7 @@ export function findLocationById(id: string): Location | null {
 }
 
 export function evidenceMentionsPerson(ev: Evidence, person: Person): boolean {
-  return ev.personIds.includes(person.id) || ev.personIds.includes(person.name);
+  return ev.personIds.includes(person.id);
 }
 
 export function formatDate(ts: string | null | undefined): string {
