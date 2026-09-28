@@ -5,7 +5,7 @@ import type {
   EvidenceStatus,
   Location,
   Person,
-} from "./state.js";
+} from "./domain.js";
 
 // ---------------------------------------------------------------------
 // GENERIC LOOKUP HELPERS

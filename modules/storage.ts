@@ -7,7 +7,7 @@ import {
   setBookmarks,
   setNotesStore,
 } from "./state.js";
-import type { Evidence, EvidenceRelevance, EvidenceStatus } from "./state.js";
+import type { Evidence, EvidenceRelevance, EvidenceStatus } from "./domain.js";
 
 type EvidenceReview = {
   status: EvidenceStatus;
