@@ -6,19 +6,112 @@ import {
 } from "./state.js";
 import navigateTo from "./navigation.js";
 import { openEvidenceDetail } from "./evidence.js";
+import type { PersonId } from "./domain.js";
+
+type HypothesisNature = "" | "accidental" | "deliberate" | "unclear";
+
+type HypothesisDraft = {
+  suspectId: PersonId | "";
+  nature: HypothesisNature;
+  evidenceIds: string[];
+  confidence: string;
+  explanation: string;
+  alternative: string;
+  savedAt: string;
+};
+
+type NoteEntry = {
+  index: number;
+  evidenceId: string;
+  title: string;
+  text: string;
+};
+
+function getSelectElement(id: string): HTMLSelectElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLSelectElement ? element : null;
+}
+
+function getInputElement(id: string): HTMLInputElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLInputElement ? element : null;
+}
+
+function getTextAreaElement(id: string): HTMLTextAreaElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLTextAreaElement ? element : null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isPersonId(value: unknown): value is PersonId {
+  return (
+    typeof value === "string" && allPeople.some((person) => person.id === value)
+  );
+}
+
+function isHypothesisNature(value: unknown): value is HypothesisNature {
+  return (
+    value === "" ||
+    value === "accidental" ||
+    value === "deliberate" ||
+    value === "unclear"
+  );
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+}
+
+function normalizeConfidence(value: unknown): string {
+  const numericValue =
+    (typeof value === "string" && value.trim() !== "") ||
+    typeof value === "number"
+      ? Number(value)
+      : Number.NaN;
+  if (Number.isFinite(numericValue) && numericValue >= 0 && numericValue <= 100)
+    return String(numericValue);
+  return "50";
+}
+
+function parseHypothesisDraft(raw: string): HypothesisDraft | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isRecord(parsed)) return null;
+
+    return {
+      suspectId: isPersonId(parsed.suspectId) ? parsed.suspectId : "",
+      nature: isHypothesisNature(parsed.nature) ? parsed.nature : "",
+      evidenceIds: isStringArray(parsed.evidenceIds) ? parsed.evidenceIds : [],
+      confidence: normalizeConfidence(parsed.confidence),
+      explanation:
+        typeof parsed.explanation === "string" ? parsed.explanation : "",
+      alternative:
+        typeof parsed.alternative === "string" ? parsed.alternative : "",
+      savedAt: typeof parsed.savedAt === "string" ? parsed.savedAt : "",
+    };
+  } catch (err) {
+    console.warn("Could not read hypothesis draft", err);
+    return null;
+  }
+}
 
 // ---------------------------------------------------------------------
 // WORKSPACE
 // ---------------------------------------------------------------------
 
-export function renderWorkspace() {
+export function renderWorkspace(): void {
   renderBookmarksList();
   renderNotesList();
   populateHypothesisDropdowns();
   loadHypothesisFromStorage();
 }
 
-function renderBookmarksList() {
+function renderBookmarksList(): void {
   const container = document.getElementById("bookmarksList"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!container) return;
 
@@ -31,9 +124,7 @@ function renderBookmarksList() {
   }
 
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let i = 0; i < bookmarkedItems.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const ev = bookmarkedItems[i]; // const: Bindung wird nicht neu zugewiesen.
+  for (const ev of bookmarkedItems) {
     html +=
       '<div class="mini-list-item"><strong>' +
       ev.id +
@@ -46,11 +137,14 @@ function renderBookmarksList() {
   container.innerHTML = html;
 
   const openButtons = container.querySelectorAll("[data-open-evidence]"); // const: Bindung wird nicht neu zugewiesen.
-  for (let b = 0; b < openButtons.length; b++) {
-    // let: Schleifenzähler wird erhöht.
-    openButtons[b].addEventListener("click", function (e) {
+  for (const openButton of openButtons) {
+    if (!(openButton instanceof HTMLButtonElement)) continue;
+
+    openButton.addEventListener("click", function () {
+      const id = openButton.dataset.openEvidence; // const: Bindung wird nicht neu zugewiesen.
+      if (!id) return;
+
       navigateTo("evidence");
-      const id = e.target.getAttribute("data-open-evidence"); // const: Bindung wird nicht neu zugewiesen.
       setTimeout(function () {
         openEvidenceDetail(id);
       }, 0);
@@ -58,19 +152,18 @@ function renderBookmarksList() {
   }
 }
 
-function renderNotesList() {
+function renderNotesList(): void {
   const container = document.getElementById("notesList"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!container) return;
 
-  const noteEntries = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const note = notesStore[allEvidence[i].id]; // const: Bindung wird nicht neu zugewiesen.
+  const noteEntries: NoteEntry[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const [index, evidence] of allEvidence.entries()) {
+    const note = notesStore[evidence.id]; // const: Bindung wird nicht neu zugewiesen.
     if (note) {
       noteEntries.push({
-        index: i,
-        evidenceId: allEvidence[i].id,
-        title: allEvidence[i].title,
+        index,
+        evidenceId: evidence.id,
+        title: evidence.title,
         text: note,
       });
     }
@@ -83,9 +176,7 @@ function renderNotesList() {
   }
 
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let n = 0; n < noteEntries.length; n++) {
-    // let: Schleifenzähler wird erhöht.
-    const entry = noteEntries[n]; // const: Bindung wird nicht neu zugewiesen.
+  for (const entry of noteEntries) {
     html +=
       '<div class="mini-list-item"><strong>' +
       entry.evidenceId +
@@ -97,47 +188,57 @@ function renderNotesList() {
   container.innerHTML = html;
 }
 
-export function populateHypothesisDropdowns() {
-  const suspectSelect = document.getElementById("hypSuspect"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const evidenceSelect = document.getElementById("hypEvidence"); // const: DOM-Referenz wird nicht neu zugewiesen.
+export function populateHypothesisDropdowns(): void {
+  const suspectSelect = getSelectElement("hypSuspect"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  const evidenceSelect = getSelectElement("hypEvidence"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!suspectSelect || !evidenceSelect) return;
 
   const currentSuspect = suspectSelect.value; // const: Bindung wird nicht neu zugewiesen.
   suspectSelect.innerHTML = '<option value="">Select a person…</option>';
-  for (let p = 0; p < allPeople.length; p++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const person of allPeople) {
     suspectSelect.innerHTML +=
-      '<option value="' +
-      allPeople[p].id +
-      '">' +
-      allPeople[p].name +
-      "</option>";
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
   suspectSelect.value = currentSuspect;
 
   evidenceSelect.innerHTML = "";
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const evidence of allEvidence) {
     evidenceSelect.innerHTML +=
       '<option value="' +
-      allEvidence[i].id +
+      evidence.id +
       '">' +
-      allEvidence[i].id +
+      evidence.id +
       " - " +
-      allEvidence[i].title +
+      evidence.title +
       "</option>";
   }
 }
 
-export function saveHypothesis() {
-  const draft = {
+export function saveHypothesis(): void {
+  const suspectSelect = getSelectElement("hypSuspect");
+  const natureSelect = getSelectElement("hypNature");
+  const evidenceSelect = getSelectElement("hypEvidence");
+  const confidenceInput = getInputElement("hypConfidence");
+  const explanationInput = getTextAreaElement("hypExplanation");
+  const alternativeInput = getTextAreaElement("hypAlternative");
+  if (
+    !suspectSelect ||
+    !natureSelect ||
+    !evidenceSelect ||
+    !confidenceInput ||
+    !explanationInput ||
+    !alternativeInput
+  )
+    return;
+
+  const draft: HypothesisDraft = {
     // const: Objekt-Inhalt darf sich ändern; Bindung bleibt gleich.
-    suspectId: document.getElementById("hypSuspect").value,
-    nature: document.getElementById("hypNature").value,
-    evidenceIds: getSelectedOptions(document.getElementById("hypEvidence")),
-    confidence: document.getElementById("hypConfidence").value,
-    explanation: document.getElementById("hypExplanation").value,
-    alternative: document.getElementById("hypAlternative").value,
+    suspectId: isPersonId(suspectSelect.value) ? suspectSelect.value : "",
+    nature: isHypothesisNature(natureSelect.value) ? natureSelect.value : "",
+    evidenceIds: getSelectedOptions(evidenceSelect),
+    confidence: confidenceInput.value,
+    explanation: explanationInput.value,
+    alternative: alternativeInput.value,
     savedAt: new Date().toISOString(),
   };
 
@@ -150,40 +251,50 @@ export function saveHypothesis() {
   }
 
   const msg = document.getElementById("hypothesisSavedMsg"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  msg.classList.remove("hidden");
-  setTimeout(function () {
-    msg.classList.add("hidden");
-  }, 2000);
-}
-
-function getSelectedOptions(selectEl) {
-  const result = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let i = 0; i < selectEl.options.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    if (selectEl.options[i].selected) result.push(selectEl.options[i].value);
+  if (msg) {
+    msg.classList.remove("hidden");
+    setTimeout(function () {
+      msg.classList.add("hidden");
+    }, 2000);
   }
-  return result;
 }
 
-function loadHypothesisFromStorage() {
+function getSelectedOptions(selectEl: HTMLSelectElement): string[] {
+  const selectedValues: string[] = [];
+
+  for (const option of selectEl.selectedOptions) {
+    selectedValues.push(option.value);
+  }
+
+  return selectedValues;
+}
+
+function loadHypothesisFromStorage(): void {
   const raw = localStorage.getItem(STORAGE_KEY_HYPOTHESIS); // const: Bindung wird nicht neu zugewiesen.
   if (!raw) return;
 
-  const draft = JSON.parse(raw); // const: Objekt-Inhalt darf sich ändern; Bindung bleibt gleich.
+  const draft = parseHypothesisDraft(raw); // const: Objekt-Inhalt darf sich ändern; Bindung bleibt gleich.
+  if (!draft) return;
 
-  document.getElementById("hypSuspect").value = draft.suspectId || "";
-  document.getElementById("hypNature").value = draft.nature || "";
-  document.getElementById("hypConfidence").value = draft.confidence || 50;
-  document.getElementById("hypConfidenceValue").textContent =
-    draft.confidence || 50;
-  document.getElementById("hypExplanation").value = draft.explanation || "";
-  document.getElementById("hypAlternative").value = draft.alternative || "";
+  const suspectSelect = getSelectElement("hypSuspect");
+  const natureSelect = getSelectElement("hypNature");
+  const confidenceInput = getInputElement("hypConfidence");
+  const confidenceValue = document.getElementById("hypConfidenceValue");
+  const explanationInput = getTextAreaElement("hypExplanation");
+  const alternativeInput = getTextAreaElement("hypAlternative");
+  const evidenceSelect = getSelectElement("hypEvidence");
 
-  const evidenceSelect = document.getElementById("hypEvidence"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const savedIds = draft.evidenceIds || []; // const: Bindung wird nicht neu zugewiesen.
-  for (let i = 0; i < evidenceSelect.options.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    evidenceSelect.options[i].selected =
-      savedIds.indexOf(evidenceSelect.options[i].value) !== -1;
+  if (suspectSelect) suspectSelect.value = draft.suspectId;
+  if (natureSelect) natureSelect.value = draft.nature;
+  if (confidenceInput) confidenceInput.value = draft.confidence;
+  if (confidenceValue) confidenceValue.textContent = draft.confidence;
+  if (explanationInput) explanationInput.value = draft.explanation;
+  if (alternativeInput) alternativeInput.value = draft.alternative;
+
+  if (evidenceSelect) {
+    const savedIds = new Set(draft.evidenceIds); // const: Bindung wird nicht neu zugewiesen.
+    for (const option of evidenceSelect.options) {
+      option.selected = savedIds.has(option.value);
+    }
   }
 }
