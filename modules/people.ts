@@ -7,17 +7,22 @@ import {
 import { evidenceMentionsPerson } from "./utils.js";
 import navigateTo from "./navigation.js";
 import { renderEvidenceList } from "./evidence.js";
+import type { Person } from "./domain.js";
+import type { PeopleTab } from "./state.js";
 
 // ---------------------------------------------------------------------
 // PEOPLE & LOCATIONS
 // ---------------------------------------------------------------------
 
-export function switchPeopleTab(tab) {
-  setCurrentPeopleTab(tab);
+export function switchPeopleTab(tab: PeopleTab): void {
   const peoplePanel = document.getElementById("peoplePanel"); // const: DOM-Referenz wird nicht neu zugewiesen.
   const locationsPanel = document.getElementById("locationsPanel"); // const: DOM-Referenz wird nicht neu zugewiesen.
   const peopleTabBtn = document.getElementById("tabPeopleBtn"); // const: DOM-Referenz wird nicht neu zugewiesen.
   const locationsTabBtn = document.getElementById("tabLocationsBtn"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  if (!peoplePanel || !locationsPanel || !peopleTabBtn || !locationsTabBtn)
+    return;
+
+  setCurrentPeopleTab(tab);
 
   if (tab === "people") {
     peoplePanel.classList.remove("hidden");
@@ -32,22 +37,21 @@ export function switchPeopleTab(tab) {
   }
 }
 
-function countEvidenceForPerson(person) {
+function countEvidenceForPerson(person: Person): number {
   let count = 0; // let: Zähler wird erhöht.
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    if (evidenceMentionsPerson(allEvidence[i], person)) count++;
+  for (const evidence of allEvidence) {
+    if (evidenceMentionsPerson(evidence, person)) count++;
   }
   return count;
 }
 
-export function renderPeople() {
+export function renderPeople(): void {
   const container = document.getElementById("peoplePanel"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  if (!container) return;
+
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let i = 0; i < allPeople.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const person = allPeople[i]; // const: Bindung wird nicht neu zugewiesen.
-    let count = countEvidenceForPerson(person); // let: Zähler wird erhöht.
+  for (const person of allPeople) {
+    const count = countEvidenceForPerson(person); // const: Zähler wird nicht neu zugewiesen.
 
     html += '<div class="person-card">';
     html += '<div class="person-card-header">';
@@ -66,9 +70,8 @@ export function renderPeople() {
     html += "</div>";
     html += "<p><strong>Speciality:</strong> " + person.speciality + "</p>";
     html += "<ul>";
-    for (let r = 0; r < person.responsibilities.length; r++) {
-      // let: Schleifenzähler wird erhöht.
-      html += "<li>" + person.responsibilities[r] + "</li>";
+    for (const responsibility of person.responsibilities) {
+      html += "<li>" + responsibility + "</li>";
     }
     html += "</ul>";
     html +=
@@ -89,12 +92,19 @@ export function renderPeople() {
   }
   container.innerHTML = html;
 
-  const links = container.querySelectorAll(".evidence-count-link"); // const: Bindung wird nicht neu zugewiesen.
-  for (let l = 0; l < links.length; l++) {
-    // let: Schleifenzähler wird erhöht.
-    links[l].addEventListener("click", function (e) {
-      const personId = e.target.getAttribute("data-person-id"); // const: Bindung wird nicht neu zugewiesen.
-      document.getElementById("filterPerson").value = personId;
+  const links = container.querySelectorAll<HTMLButtonElement>(
+    ".evidence-count-link",
+  ); // const: Bindung wird nicht neu zugewiesen.
+  for (const link of links) {
+    link.addEventListener("click", function (event) {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLButtonElement)) return;
+
+      const personId = target.dataset.personId; // const: Bindung wird nicht neu zugewiesen.
+      const personSelect = document.getElementById("filterPerson");
+      if (!personId || !(personSelect instanceof HTMLSelectElement)) return;
+
+      personSelect.value = personId;
       navigateTo("evidence");
       setTimeout(function () {
         renderEvidenceList();
@@ -103,19 +113,18 @@ export function renderPeople() {
   }
 }
 
-export function renderLocations() {
+export function renderLocations(): void {
   const container = document.getElementById("locationsPanel"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  if (!container) return;
+
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let i = 0; i < allLocations.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const loc = allLocations[i]; // const: Bindung wird nicht neu zugewiesen.
+  for (const loc of allLocations) {
     html += '<div class="location-card">';
     html += "<h3>" + loc.id + " &mdash; " + loc.name + "</h3>";
     html += "<p>" + loc.description + "</p>";
     html += "<p><strong>Contains:</strong></p><ul>";
-    for (let c = 0; c < loc.contains.length; c++) {
-      // let: Schleifenzähler wird erhöht.
-      html += "<li>" + loc.contains[c] + "</li>";
+    for (const containedItem of loc.contains) {
+      html += "<li>" + containedItem + "</li>";
     }
     html += "</ul></div>";
   }
