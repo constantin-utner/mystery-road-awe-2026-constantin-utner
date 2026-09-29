@@ -12,7 +12,7 @@ import { formatDate, getStatusBadgeClass } from "./utils.js";
 // DASHBOARD
 // ---------------------------------------------------------------------
 
-function statCardHTML(value, label) {
+function statCardHTML(value: number, label: string): string {
   return (
     '<div class="stat-card"><div class="stat-value">' +
     value +
@@ -22,15 +22,13 @@ function statCardHTML(value, label) {
   );
 }
 
-export function renderDashboard() {
+export function renderDashboard(): void {
   const container = document.getElementById("dashboardContent"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!container) return;
 
   let reviewedCount = 0; // let: Zähler wird erhöht.
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    if ((allEvidence[i].status || "").toLowerCase() === "reviewed")
-      reviewedCount++;
+  for (const evidence of allEvidence) {
+    if ((evidence.status || "").toLowerCase() === "reviewed") reviewedCount++;
   }
 
   const progressPct =
@@ -72,9 +70,7 @@ export function renderDashboard() {
   if (recentEvidence.length === 0) {
     html += "<p>No evidence loaded yet.</p>";
   }
-  for (let e = 0; e < recentEvidence.length; e++) {
-    // let: Schleifenzähler wird erhöht.
-    const ev = recentEvidence[e]; // const: Bindung wird nicht neu zugewiesen.
+  for (const ev of recentEvidence) {
     html +=
       '<div class="mini-list-item"><strong>' +
       ev.id +
@@ -93,9 +89,7 @@ export function renderDashboard() {
   if (recentTimeline.length === 0) {
     html += "<p>No timeline events loaded yet.</p>";
   }
-  for (let t = 0; t < recentTimeline.length; t++) {
-    // let: Schleifenzähler wird erhöht.
-    const evt = recentTimeline[t]; // const: Bindung wird nicht neu zugewiesen.
+  for (const evt of recentTimeline) {
     html +=
       '<div class="mini-list-item"><strong>' +
       formatDate(evt.time) +
