@@ -8,84 +8,83 @@ import {
 import { findEvidenceById, findLocationById, formatDate } from "./utils.js";
 import navigateTo from "./navigation.js";
 import { openEvidenceDetail } from "./evidence.js";
+import type { TimelineCertainty, TimelineEvent } from "./domain.js";
+
+type TimelineOrder = "asc" | "desc";
+
+function getSelectElement(id: string): HTMLSelectElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLSelectElement ? element : null;
+}
+
+function isTimelineOrder(value: string): value is TimelineOrder {
+  return value === "asc" || value === "desc";
+}
 
 // ---------------------------------------------------------------------
 // TIMELINE
 // ---------------------------------------------------------------------
 
-export function populateTimelineDropdowns() {
-  const personSelect = document.getElementById("timelinePersonFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const locationSelect = document.getElementById("timelineLocationFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const typeSelect = document.getElementById("timelineTypeFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
+export function populateTimelineDropdowns(): void {
+  const personSelect = getSelectElement("timelinePersonFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  const locationSelect = getSelectElement("timelineLocationFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  const typeSelect = getSelectElement("timelineTypeFilter"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!personSelect || !locationSelect || !typeSelect) return;
 
   personSelect.innerHTML = '<option value="">All people</option>';
-  for (let p = 0; p < allPeople.length; p++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const person of allPeople) {
     personSelect.innerHTML +=
-      '<option value="' +
-      allPeople[p].id +
-      '">' +
-      allPeople[p].name +
-      "</option>";
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
 
   locationSelect.innerHTML = '<option value="">All locations</option>';
-  for (let l = 0; l < allLocations.length; l++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const location of allLocations) {
     locationSelect.innerHTML +=
-      '<option value="' +
-      allLocations[l].id +
-      '">' +
-      allLocations[l].id +
-      "</option>";
+      '<option value="' + location.id + '">' + location.id + "</option>";
   }
 
-  const types = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let i = 0; i < allTimeline.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    if (types.indexOf(allTimeline[i].type) === -1)
-      types.push(allTimeline[i].type);
+  const types: string[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const event of allTimeline) {
+    if (types.indexOf(event.type) === -1) types.push(event.type);
   }
   typeSelect.innerHTML = '<option value="">All event types</option>';
-  for (let t = 0; t < types.length; t++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const type of types) {
     typeSelect.innerHTML +=
-      '<option value="' + types[t] + '">' + types[t] + "</option>";
+      '<option value="' + type + '">' + type + "</option>";
   }
 }
 
-export function renderTimeline() {
+export function renderTimeline(): void {
   const container = document.getElementById("timelineContainer"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!container) return;
 
-  const order = document.getElementById("timelineOrder").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const personFilter = document.getElementById("timelinePersonFilter").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const locationFilter = document.getElementById(
-    "timelineLocationFilter",
-  ).value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const typeFilter = document.getElementById("timelineTypeFilter").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
+  const orderValue = getSelectElement("timelineOrder")?.value ?? "";
+  const order: TimelineOrder = isTimelineOrder(orderValue) ? orderValue : "asc";
+  const personFilter = getSelectElement("timelinePersonFilter")?.value ?? "";
+  const locationFilter =
+    getSelectElement("timelineLocationFilter")?.value ?? "";
+  const typeFilter = getSelectElement("timelineTypeFilter")?.value ?? "";
 
-  let events = []; // let: Gefilterte Liste wird durch sortierte Liste ersetzt.
-  for (let i = 0; i < allTimeline.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const evt = allTimeline[i]; // const: Bindung wird nicht neu zugewiesen.
-    if (personFilter && evt.personIds.indexOf(personFilter) === -1) continue;
-    if (locationFilter && evt.locationIds.indexOf(locationFilter) === -1)
+  const events: TimelineEvent[] = [];
+  for (const event of allTimeline) {
+    if (
+      personFilter &&
+      !event.personIds.some((personId) => personId === personFilter)
+    )
       continue;
-    if (typeFilter && evt.type !== typeFilter) continue;
-    events.push(evt);
+    if (locationFilter && event.locationIds.indexOf(locationFilter) === -1)
+      continue;
+    if (typeFilter && event.type !== typeFilter) continue;
+    events.push(event);
   }
 
-  events = events.slice().sort(function (a, b) {
-    const diff = new Date(a.time) - new Date(b.time); // const: Bindung wird nicht neu zugewiesen.
+  events.sort(function (a, b) {
+    const diff = new Date(a.time).getTime() - new Date(b.time).getTime(); // const: Bindung wird nicht neu zugewiesen.
     return order === "desc" ? -diff : diff;
   });
 
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let e = 0; e < events.length; e++) {
-    // let: Schleifenzähler wird erhöht.
-    const item = events[e]; // const: Bindung wird nicht neu zugewiesen.
+  for (const item of events) {
     html += '<div class="timeline-event certainty-' + item.certainty + '">';
     html +=
       '<div class="timeline-time">' +
@@ -99,10 +98,8 @@ export function renderTimeline() {
     html += '<p class="evidence-meta">Event type: ' + item.type + "</p>";
     html += "<p>" + item.description + "</p>";
 
-    const eventLocationNames = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-    for (let el = 0; el < item.locationIds.length; el++) {
-      // let: Schleifenzähler wird erhöht.
-      const locationId = item.locationIds[el]; // const: Bindung wird nicht neu zugewiesen.
+    const eventLocationNames: string[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+    for (const locationId of item.locationIds) {
       const evtLoc = findLocationById(locationId); // const: Bindung wird nicht neu zugewiesen.
       eventLocationNames.push(
         evtLoc ? evtLoc.id + " - " + evtLoc.name : locationId,
@@ -115,13 +112,12 @@ export function renderTimeline() {
         "</p>";
     }
 
-    for (let ev2 = 0; ev2 < item.evidenceIds.length; ev2++) {
-      // let: Schleifenzähler wird erhöht.
+    for (const evidenceId of item.evidenceIds) {
       html +=
         '<button type="button" class="evidence-link-btn" data-evidence-id="' +
-        item.evidenceIds[ev2] +
+        evidenceId +
         '">View ' +
-        item.evidenceIds[ev2] +
+        evidenceId +
         "</button>";
     }
     html += "</div>";
@@ -132,15 +128,17 @@ export function renderTimeline() {
   container.innerHTML = html;
 
   const linkButtons = container.querySelectorAll(".evidence-link-btn"); // const: Bindung wird nicht neu zugewiesen.
-  for (let b = 0; b < linkButtons.length; b++) {
-    // let: Schleifenzähler wird erhöht.
-    linkButtons[b].addEventListener("click", function (e) {
-      openEvidenceModal(e.target.getAttribute("data-evidence-id"));
+  for (const linkButton of linkButtons) {
+    if (!(linkButton instanceof HTMLButtonElement)) continue;
+
+    linkButton.addEventListener("click", function () {
+      const evidenceId = linkButton.dataset.evidenceId;
+      if (evidenceId) openEvidenceModal(evidenceId);
     });
   }
 }
 
-function certaintyBadgeClass(certainty) {
+function certaintyBadgeClass(certainty: TimelineCertainty): string {
   if (certainty === "confirmed") return "reviewed";
   if (certainty === "contradictory") return "critical";
   if (certainty === "reported") return "flagged";
@@ -148,32 +146,42 @@ function certaintyBadgeClass(certainty) {
 }
 
 // --- Quick-view modal (used from the timeline) -------------------------
-function openEvidenceModal(evidenceId) {
+function openEvidenceModal(evidenceId: string): void {
   const ev = findEvidenceById(evidenceId); // const: Bindung wird nicht neu zugewiesen.
   if (!ev) return;
 
   let modal = document.getElementById("quickViewModal"); // let: Fehlendes Modal wird neu erstellt und zugewiesen.
   if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "quickViewModal";
-    document.body.appendChild(modal);
+    const createdModal = document.createElement("div");
+    createdModal.id = "quickViewModal";
+    document.body.appendChild(createdModal);
 
-    modal.addEventListener("click", function (e) {
+    createdModal.addEventListener("click", function (event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
       if (
-        e.target.classList.contains("modal-close-btn") ||
-        e.target.classList.contains("modal-backdrop")
+        target.classList.contains("modal-close-btn") ||
+        target.classList.contains("modal-backdrop")
       ) {
-        modal.innerHTML = "";
+        createdModal.innerHTML = "";
       }
-      if (e.target.getAttribute && e.target.getAttribute("data-open-full")) {
-        modal.innerHTML = "";
+
+      const openFullButton = target.closest("[data-open-full]");
+      const fullEvidenceId =
+        openFullButton instanceof HTMLElement
+          ? openFullButton.dataset.openFull
+          : undefined;
+      if (fullEvidenceId) {
+        createdModal.innerHTML = "";
         navigateTo("evidence");
         setTimeout(function () {
-          openEvidenceDetail(e.target.getAttribute("data-open-full"));
+          openEvidenceDetail(fullEvidenceId);
         }, 0);
       }
     });
     setModalCloseListenerCount(modalCloseListenerCount + 1);
+    modal = createdModal;
   }
 
   console.log("modal opened, active close listeners:", modalCloseListenerCount);
