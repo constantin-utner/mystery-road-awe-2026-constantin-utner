@@ -30,44 +30,19 @@
           </div>
         </div>
         <nav class="main-nav" aria-label="Main navigation">
-          <button
-            type="button"
-            class="nav-btn"
-            data-view="dashboard"
-            onclick="navigateTo('dashboard')"
-          >
+          <button type="button" class="nav-btn" data-view="dashboard">
             Dashboard
           </button>
-          <button
-            type="button"
-            class="nav-btn"
-            data-view="evidence"
-            onclick="navigateTo('evidence')"
-          >
+          <button type="button" class="nav-btn" data-view="evidence">
             Evidence
           </button>
-          <button
-            type="button"
-            class="nav-btn"
-            data-view="people"
-            onclick="navigateTo('people')"
-          >
+          <button type="button" class="nav-btn" data-view="people">
             People &amp; Locations
           </button>
-          <button
-            type="button"
-            class="nav-btn"
-            data-view="timeline"
-            onclick="navigateTo('timeline')"
-          >
+          <button type="button" class="nav-btn" data-view="timeline">
             Timeline
           </button>
-          <button
-            type="button"
-            class="nav-btn"
-            data-view="workspace"
-            onclick="navigateTo('workspace')"
-          >
+          <button type="button" class="nav-btn" data-view="workspace">
             Workspace
           </button>
         </nav>
@@ -97,7 +72,7 @@
               <button
                 type="button"
                 class="btn btn-secondary btn-small"
-                onclick="navigateTo('evidence')"
+                data-view="evidence"
               >
                 Go to Evidence
               </button>
@@ -111,7 +86,7 @@
               <button
                 type="button"
                 class="btn btn-secondary btn-small"
-                onclick="navigateTo('people')"
+                data-view="people"
               >
                 Go to People &amp; Locations
               </button>
@@ -126,7 +101,7 @@
               <button
                 type="button"
                 class="btn btn-secondary btn-small"
-                onclick="navigateTo('timeline')"
+                data-view="timeline"
               >
                 Go to Timeline
               </button>
@@ -141,7 +116,7 @@
               <button
                 type="button"
                 class="btn btn-secondary btn-small"
-                onclick="navigateTo('workspace')"
+                data-view="workspace"
               >
                 Go to Workspace
               </button>
@@ -215,7 +190,7 @@
             <label for="sortEvidence" class="visually-hidden"
               >Sort evidence</label
             >
-            <select id="sortEvidence" onchange="handleSortChange()">
+            <select id="sortEvidence">
               <option value="date-desc">Newest first</option>
               <option value="date-asc">Oldest first</option>
               <option value="title-asc">Title (A&ndash;Z)</option>
@@ -251,7 +226,7 @@
             type="button"
             id="tabPeopleBtn"
             class="tab-btn active"
-            onclick="switchPeopleTab('people')"
+            data-people-tab="people"
           >
             People
           </button>
@@ -259,7 +234,7 @@
             type="button"
             id="tabLocationsBtn"
             class="tab-btn"
-            onclick="switchPeopleTab('locations')"
+            data-people-tab="locations"
           >
             Locations
           </button>
@@ -382,8 +357,8 @@
             <div class="form-actions">
               <button
                 type="button"
+                id="saveHypothesisBtn"
                 class="btn btn-primary"
-                onclick="saveHypothesis()"
               >
                 Save hypothesis draft
               </button>
@@ -403,6 +378,6 @@
       </p>
     </footer>
 
-    <script type="module" src="main.js"></script>
+    <script type="module" src="main.ts"></script>
   </body>
 </html>

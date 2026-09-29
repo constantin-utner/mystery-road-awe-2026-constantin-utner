@@ -4,9 +4,6 @@ import {
   renderEvidenceList,
   handleSearchInput,
   clearFilters,
-  handleSortChange,
-  closeEvidenceDetail,
-  saveCurrentNote,
 } from "./modules/evidence.js";
 import {
   renderPeople,
@@ -22,55 +19,64 @@ import {
   loadNoteAsync,
 } from "./modules/storage.js";
 import navigateTo from "./modules/navigation.js";
+import type { PageName, PeopleTab } from "./modules/state.js";
+
+const validViews: readonly PageName[] = [
+  "dashboard",
+  "evidence",
+  "people",
+  "timeline",
+  "workspace",
+];
+
+function isPageName(value: string): value is PageName {
+  return validViews.some((view) => view === value);
+}
+
+function isPeopleTab(value: string): value is PeopleTab {
+  return value === "people" || value === "locations";
+}
 
 // ---------------------------------------------------------------------
 // HASH ROUTING
 // ---------------------------------------------------------------------
 
-function handleHashChange() {
-  let hash = window.location.hash.replace("#", ""); // let: Ungültiger Hash wird durch dashboard ersetzt.
-  const validViews = [
-    "dashboard",
-    "evidence",
-    "people",
-    "timeline",
-    "workspace",
-  ]; // const: Bindung wird nicht neu zugewiesen.
-  if (validViews.indexOf(hash) === -1) {
-    hash = "dashboard";
-  }
-  setCurrentPage(hash);
+function handleHashChange(): void {
+  const hash = window.location.hash.replace("#", "");
+  const page: PageName = isPageName(hash) ? hash : "dashboard";
+  const activeSection = document.getElementById("view-" + page);
+  if (!activeSection) return;
+
+  setCurrentPage(page);
 
   const sections = document.querySelectorAll(".view"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  for (let i = 0; i < sections.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    sections[i].classList.remove("active");
+  for (const section of sections) {
+    section.classList.remove("active");
   }
-  document.getElementById("view-" + hash).classList.add("active");
+  activeSection.classList.add("active");
 
   const navButtons = document.querySelectorAll(".nav-btn"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  for (let n = 0; n < navButtons.length; n++) {
-    // let: Schleifenzähler wird erhöht.
-    navButtons[n].classList.remove("active");
-    if (navButtons[n].getAttribute("data-view") === hash) {
-      navButtons[n].classList.add("active");
+  for (const navButton of navButtons) {
+    navButton.classList.remove("active");
+    if (navButton.getAttribute("data-view") === page) {
+      navButton.classList.add("active");
     }
   }
 
-  if (hash === "dashboard" && !viewRendered.dashboard) {
+  if (page === "dashboard" && !viewRendered.dashboard) {
     renderDashboard();
     viewRendered.dashboard = true;
-  } else if (hash === "evidence" && !viewRendered.evidence) {
+  } else if (page === "evidence" && !viewRendered.evidence) {
     renderEvidenceList();
     viewRendered.evidence = true;
-  } else if (hash === "people" && !viewRendered.people) {
+  } else if (page === "people" && !viewRendered.people) {
     renderPeople();
     renderLocations();
     viewRendered.people = true;
-  } else if (hash === "timeline" && !viewRendered.timeline) {
+  } else if (page === "timeline" && !viewRendered.timeline) {
     renderTimeline();
     viewRendered.timeline = true;
-  } else if (hash === "workspace") {
+  } else if (page === "workspace") {
     // workspace is cheap enough that it always re-renders
     renderWorkspace();
   }
@@ -80,91 +86,100 @@ function handleHashChange() {
 // EVENT LISTENER SETUP
 // ---------------------------------------------------------------------
 
-function setupEventListeners() {
-  window.addEventListener("hashchange", handleHashChange);
+function setupEventListeners(): void {
+  const navigationButtons = document.querySelectorAll("[data-view]");
+  for (const navigationButton of navigationButtons) {
+    if (!(navigationButton instanceof HTMLButtonElement)) continue;
 
-  const navButtons = document.querySelectorAll(".nav-btn"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  for (let i = 0; i < navButtons.length; i++) {
-    navButtons[i].addEventListener("click", function () {
-      const targetView = navButtons[i].getAttribute("data-view"); // const: Bindung wird nicht neu zugewiesen.
+    navigationButton.addEventListener("click", function () {
+      const targetView = navigationButton.dataset.view;
       console.log("nav clicked:", targetView);
+      if (targetView && isPageName(targetView)) navigateTo(targetView);
+    });
+  }
+
+  const peopleTabButtons = document.querySelectorAll("[data-people-tab]");
+  for (const peopleTabButton of peopleTabButtons) {
+    if (!(peopleTabButton instanceof HTMLButtonElement)) continue;
+
+    peopleTabButton.addEventListener("click", function () {
+      const tab = peopleTabButton.dataset.peopleTab;
+      if (tab && isPeopleTab(tab)) switchPeopleTab(tab);
     });
   }
 
   document
     .getElementById("evidenceSearch")
-    .addEventListener("input", handleSearchInput);
+    ?.addEventListener("input", handleSearchInput);
 
   document
     .getElementById("filterType")
-    .addEventListener("change", renderEvidenceList);
+    ?.addEventListener("change", renderEvidenceList);
   document
     .getElementById("filterPerson")
-    .addEventListener("change", renderEvidenceList);
+    ?.addEventListener("change", renderEvidenceList);
   document
     .getElementById("filterLocation")
-    .addEventListener("change", renderEvidenceList);
+    ?.addEventListener("change", renderEvidenceList);
 
   document
     .getElementById("filterStatus")
-    .addEventListener("change", renderEvidenceList);
+    ?.addEventListener("change", renderEvidenceList);
 
   document
     .getElementById("filterRelevance")
-    .addEventListener("change", renderEvidenceList);
+    ?.addEventListener("change", renderEvidenceList);
 
   document
     .getElementById("clearFiltersBtn")
-    .addEventListener("click", clearFilters);
+    ?.addEventListener("click", clearFilters);
+
+  document
+    .getElementById("sortEvidence")
+    ?.addEventListener("change", renderEvidenceList);
 
   document
     .getElementById("timelineOrder")
-    .addEventListener("change", renderTimeline);
+    ?.addEventListener("change", renderTimeline);
   document
     .getElementById("timelinePersonFilter")
-    .addEventListener("change", renderTimeline);
+    ?.addEventListener("change", renderTimeline);
   document
     .getElementById("timelineLocationFilter")
-    .addEventListener("change", renderTimeline);
+    ?.addEventListener("change", renderTimeline);
   document
     .getElementById("timelineTypeFilter")
-    .addEventListener("change", renderTimeline);
+    ?.addEventListener("change", renderTimeline);
+
+  const confidenceInput = document.getElementById("hypConfidence");
+  const confidenceValue = document.getElementById("hypConfidenceValue");
+  if (confidenceInput instanceof HTMLInputElement && confidenceValue) {
+    confidenceInput.addEventListener("input", function () {
+      confidenceValue.textContent = confidenceInput.value;
+    });
+  }
 
   document
-    .getElementById("hypConfidence")
-    .addEventListener("input", function (e) {
-      document.getElementById("hypConfidenceValue").textContent =
-        e.target.value;
-    });
+    .getElementById("saveHypothesisBtn")
+    ?.addEventListener("click", saveHypothesis);
 }
 
 // ---------------------------------------------------------------------
 // INIT
 // ---------------------------------------------------------------------
 
-function initApp() {
+function initApp(): void {
   loadBookmarksFromStorage();
   loadNotesFromStorage();
   setupEventListeners();
 
   loadAllData().then(function () {
     handleHashChange();
-    const firstNote = loadNoteAsync("E01").then((firstNote) =>
+    loadNoteAsync("E01").then((firstNote) =>
       console.log("First note preview:", firstNote),
-    ); // const: Bindung wird nicht neu zugewiesen.
+    );
   });
 }
 
 window.addEventListener("DOMContentLoaded", initApp);
 window.addEventListener("hashchange", handleHashChange);
-
-// ---------------------------------------------------------------------
-// WINDOW BRIDGE (for inline onclick/onchange handlers in the HTML)
-// ---------------------------------------------------------------------
-
-window.navigateTo = navigateTo;
-window.switchPeopleTab = switchPeopleTab;
-window.handleSortChange = handleSortChange;
-window.saveHypothesis = saveHypothesis;
-window.closeEvidenceDetail = closeEvidenceDetail;
-window.saveCurrentNote = saveCurrentNote;

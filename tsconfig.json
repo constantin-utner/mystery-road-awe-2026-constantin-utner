@@ -8,8 +8,7 @@
     "verbatimModuleSyntax": true, //
     "isolatedModules": true,
 
-    "allowJs": true,
-    "checkJs": false,
+    "allowJs": false,
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -20,6 +19,6 @@
     "forceConsistentCasingInFileNames": true //
   },
 
-  "include": ["*.ts", "main.ts", "modules/**/*.js", "modules/**/*.ts"],
+  "include": ["*.ts", "modules/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }

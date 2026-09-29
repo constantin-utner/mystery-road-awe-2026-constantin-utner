@@ -297,10 +297,6 @@ export function applyStoredBookmarkFlags(): void {
   }
 }
 
-export function handleSortChange(): void {
-  renderEvidenceList();
-}
-
 export function clearFilters(): void {
   const searchInput = getInputElement("evidenceSearch");
   if (searchInput) searchInput.value = "";
@@ -404,7 +400,7 @@ function renderEvidenceDetail(ev: Evidence): void {
     formatDate(ev.timestamp) +
     "</div></div>";
   html +=
-    '<button type="button" class="btn btn-secondary btn-small" onclick="closeEvidenceDetail()">Close</button>';
+    '<button type="button" class="btn btn-secondary btn-small" data-action="close-detail">Close</button>';
   html += "</div>";
 
   if (ev.tags.indexOf("critical") !== -1) {
@@ -450,7 +446,7 @@ function renderEvidenceDetail(ev: Evidence): void {
     storedNote +
     "</textarea>";
   html +=
-    '<button type="button" class="btn btn-primary btn-small" style="margin-top:6px;" onclick="saveCurrentNote()">Save note</button>';
+    '<button type="button" class="btn btn-primary btn-small" style="margin-top:6px;" data-action="save-note">Save note</button>';
   html += "</div>";
 
   html +=
@@ -459,6 +455,16 @@ function renderEvidenceDetail(ev: Evidence): void {
     "</div></div>";
 
   section.innerHTML = html;
+
+  const closeButton = section.querySelector('[data-action="close-detail"]');
+  if (closeButton instanceof HTMLButtonElement) {
+    closeButton.addEventListener("click", closeEvidenceDetail);
+  }
+
+  const saveNoteButton = section.querySelector('[data-action="save-note"]');
+  if (saveNoteButton instanceof HTMLButtonElement) {
+    saveNoteButton.addEventListener("click", saveCurrentNote);
+  }
 
   const statusSelect = getSelectElement("detailStatusSelect");
   statusSelect?.addEventListener("change", function () {
