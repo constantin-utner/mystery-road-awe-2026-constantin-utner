@@ -25,68 +25,93 @@ import {
   saveNoteForEvidence,
   saveEvidenceReview,
 } from "./storage.js";
+import type { Evidence, EvidenceRelevance, EvidenceStatus } from "./domain.js";
+
+type EvidenceSort = "title-asc" | "title-desc" | "date-asc" | "date-desc";
+
+function getInputElement(id: string): HTMLInputElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLInputElement ? element : null;
+}
+
+function getSelectElement(id: string): HTMLSelectElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLSelectElement ? element : null;
+}
+
+function getTextAreaElement(id: string): HTMLTextAreaElement | null {
+  const element = document.getElementById(id);
+  return element instanceof HTMLTextAreaElement ? element : null;
+}
+
+function isEvidenceSort(value: string): value is EvidenceSort {
+  return (
+    value === "title-asc" ||
+    value === "title-desc" ||
+    value === "date-asc" ||
+    value === "date-desc"
+  );
+}
+
+function isEvidenceStatus(value: string): value is EvidenceStatus {
+  return value === "unreviewed" || value === "reviewed" || value === "flagged";
+}
+
+function isEvidenceRelevance(value: string): value is EvidenceRelevance {
+  return value === "unknown" || value === "relevant" || value === "irrelevant";
+}
 
 // ---------------------------------------------------------------------
 // EVIDENCE CATALOGUE
 // ---------------------------------------------------------------------
 
-export function populateEvidenceDropdowns() {
-  const typeSelect = document.getElementById("filterType"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const personSelect = document.getElementById("filterPerson"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const locationSelect = document.getElementById("filterLocation"); // const: DOM-Referenz wird nicht neu zugewiesen.
+export function populateEvidenceDropdowns(): void {
+  const typeSelect = getSelectElement("filterType"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  const personSelect = getSelectElement("filterPerson"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  const locationSelect = getSelectElement("filterLocation"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!typeSelect || !personSelect || !locationSelect) return;
 
-  const types = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const t = allEvidence[i].type.toLowerCase(); // const: Bindung wird nicht neu zugewiesen.
+  const types: string[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const evidence of allEvidence) {
+    const t = evidence.type.toLowerCase(); // const: Bindung wird nicht neu zugewiesen.
     if (types.indexOf(t) === -1) types.push(t);
   }
   typeSelect.innerHTML = '<option value="">All types</option>';
-  for (let ti = 0; ti < types.length; ti++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const type of types) {
     typeSelect.innerHTML +=
-      '<option value="' + types[ti] + '">' + types[ti] + "</option>";
+      '<option value="' + type + '">' + type + "</option>";
   }
 
   personSelect.innerHTML = '<option value="">All people</option>';
-  for (let p = 0; p < allPeople.length; p++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const person of allPeople) {
     personSelect.innerHTML +=
-      '<option value="' +
-      allPeople[p].id +
-      '">' +
-      allPeople[p].name +
-      "</option>";
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
 
   locationSelect.innerHTML = '<option value="">All locations</option>';
-  for (let l = 0; l < allLocations.length; l++) {
-    // let: Schleifenzähler wird erhöht.
+  for (const location of allLocations) {
     locationSelect.innerHTML +=
       '<option value="' +
-      allLocations[l].id +
+      location.id +
       '">' +
-      allLocations[l].id +
+      location.id +
       " - " +
-      allLocations[l].name +
+      location.name +
       "</option>";
   }
 }
 
-function getFilteredEvidence() {
-  const searchBox = document.getElementById("evidenceSearch"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  const searchTerm = searchBox ? searchBox.value.toLowerCase().trim() : ""; // const: Bindung wird nicht neu zugewiesen.
-  const typeVal = document.getElementById("filterType").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const personVal = document.getElementById("filterPerson").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const locationVal = document.getElementById("filterLocation").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const statusVal = document.getElementById("filterStatus").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
-  const relevanceVal = document.getElementById("filterRelevance").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
+function getFilteredEvidence(): Evidence[] {
+  const searchTerm =
+    getInputElement("evidenceSearch")?.value.toLowerCase().trim() ?? "";
+  const typeVal = getSelectElement("filterType")?.value ?? "";
+  const personVal = getSelectElement("filterPerson")?.value ?? "";
+  const locationVal = getSelectElement("filterLocation")?.value ?? "";
+  const statusVal = getSelectElement("filterStatus")?.value ?? "";
+  const relevanceVal = getSelectElement("filterRelevance")?.value ?? "";
 
-  const results = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    const item = allEvidence[i]; // const: Bindung wird nicht neu zugewiesen.
+  const results: Evidence[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const item of allEvidence) {
     let matches = true; // let: Filter können den Wert auf false setzen.
 
     if (searchTerm) {
@@ -123,7 +148,10 @@ function getFilteredEvidence() {
   return results;
 }
 
-function getSortedEvidence(items, sortValue) {
+function getSortedEvidence(
+  items: Evidence[],
+  sortValue: EvidenceSort,
+): Evidence[] {
   const sorted = [...items]; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
 
   if (sortValue === "title-asc") {
@@ -131,15 +159,21 @@ function getSortedEvidence(items, sortValue) {
   } else if (sortValue === "title-desc") {
     sorted.sort((a, b) => b.title.localeCompare(a.title));
   } else if (sortValue === "date-asc") {
-    sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    sorted.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
   } else {
-    sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    sorted.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
   }
 
   return sorted;
 }
 
-export function renderEvidenceList() {
+export function renderEvidenceList(): void {
   const container = document.getElementById("evidenceList"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!container) return;
 
@@ -152,23 +186,25 @@ export function renderEvidenceList() {
   if (loadingIndicator) loadingIndicator.classList.add("hidden");
 
   const filtered = getFilteredEvidence(); // const: Bindung wird nicht neu zugewiesen.
-  const sortValue = document.getElementById("sortEvidence").value; // const: Ausgelesener Wert wird nicht neu zugewiesen.
+  const selectedSort = getSelectElement("sortEvidence")?.value ?? "";
+  const sortValue: EvidenceSort = isEvidenceSort(selectedSort)
+    ? selectedSort
+    : "date-desc";
   const results = getSortedEvidence(filtered, sortValue); // const: Ergebnisliste wird nicht neu zugewiesen.
 
   let html = ""; // let: HTML-Text wird schrittweise erweitert.
   if (results.length === 0) {
     html = "<p>No evidence matches the current filters.</p>";
   }
-  for (let i = 0; i < results.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    html += renderEvidenceCardHTML(results[i]);
+  for (const evidence of results) {
+    html += renderEvidenceCardHTML(evidence);
   }
   container.innerHTML = html;
 
   container.addEventListener("click", handleEvidenceListClick);
 }
 
-function renderEvidenceCardHTML(ev) {
+function renderEvidenceCardHTML(ev: Evidence): string {
   const isBookmarked = bookmarks.indexOf(ev.id) !== -1; // const: Bindung wird nicht neu zugewiesen.
   let html = '<div class="evidence-card" data-id="' + ev.id + '">'; // let: HTML-Text wird schrittweise erweitert.
   html +=
@@ -208,31 +244,34 @@ function renderEvidenceCardHTML(ev) {
     ev.relevance +
     "</span>";
   html += "<div>";
-  for (let t = 0; t < ev.tags.length; t++) {
-    // let: Schleifenzähler wird erhöht.
-    html += '<span class="tag-chip">' + ev.tags[t] + "</span>";
+  for (const tag of ev.tags) {
+    html += '<span class="tag-chip">' + tag + "</span>";
   }
   html += "</div>";
   html += "</div>";
   return html;
 }
 
-function handleEvidenceListClick(event) {
+function handleEvidenceListClick(event: MouseEvent): void {
   const target = event.target; // const: Bindung wird nicht neu zugewiesen.
+  if (!(target instanceof Element)) return;
 
-  if (target.dataset && target.dataset.action === "bookmark") {
+  const bookmarkButton = target.closest<HTMLElement>(
+    '[data-action="bookmark"]',
+  );
+  const bookmarkId = bookmarkButton?.dataset.id;
+  if (bookmarkId) {
     event.stopPropagation();
-    handleBookmarkClick(target.dataset.id);
+    handleBookmarkClick(bookmarkId);
     return;
   }
 
-  const card = target.closest(".evidence-card"); // const: Bindung wird nicht neu zugewiesen.
-  if (card) {
-    openEvidenceDetail(card.getAttribute("data-id"));
-  }
+  const card = target.closest<HTMLElement>(".evidence-card"); // const: Bindung wird nicht neu zugewiesen.
+  const evidenceId = card?.dataset.id;
+  if (evidenceId) openEvidenceDetail(evidenceId);
 }
 
-function handleBookmarkClick(evidenceId) {
+function handleBookmarkClick(evidenceId: string): void {
   const ev = findEvidenceById(evidenceId); // const: Bindung wird nicht neu zugewiesen.
   if (!ev) return;
 
@@ -252,29 +291,36 @@ function handleBookmarkClick(evidenceId) {
   if (currentPage === "evidence") renderEvidenceList();
 }
 
-export function applyStoredBookmarkFlags() {
-  for (let i = 0; i < allEvidence.length; i++) {
-    // let: Schleifenzähler wird erhöht.
-    allEvidence[i].bookmarked = bookmarks.indexOf(allEvidence[i].id) !== -1;
+export function applyStoredBookmarkFlags(): void {
+  for (const evidence of allEvidence) {
+    evidence.bookmarked = bookmarks.indexOf(evidence.id) !== -1;
   }
 }
 
-export function handleSortChange() {
+export function handleSortChange(): void {
   renderEvidenceList();
 }
 
-export function clearFilters() {
-  document.getElementById("evidenceSearch").value = "";
-  document.getElementById("filterType").value = "";
-  document.getElementById("filterPerson").value = "";
-  document.getElementById("filterLocation").value = "";
-  document.getElementById("filterStatus").value = "";
-  document.getElementById("filterRelevance").value = "";
+export function clearFilters(): void {
+  const searchInput = getInputElement("evidenceSearch");
+  if (searchInput) searchInput.value = "";
+
+  const selectIds = [
+    "filterType",
+    "filterPerson",
+    "filterLocation",
+    "filterStatus",
+    "filterRelevance",
+  ];
+  for (const id of selectIds) {
+    const select = getSelectElement(id);
+    if (select) select.value = "";
+  }
   renderEvidenceList();
 }
 
-function simulateAsyncSearch(term) {
-  return new Promise(function (resolve) {
+function simulateAsyncSearch(term: string): Promise<string> {
+  return new Promise<string>(function (resolve) {
     setTimeout(function () {
       resolve(term);
     }, 300);
@@ -283,11 +329,14 @@ function simulateAsyncSearch(term) {
 
 let latestSearchRequestId = 0; // let: Anfrage-ID wird erhöht.
 
-export function handleSearchInput(event) {
-  const term = event.target.value; // const: Bindung wird nicht neu zugewiesen.
+export function handleSearchInput(event: Event): void {
+  const target = event.currentTarget;
+  if (!(target instanceof HTMLInputElement)) return;
+
+  const term = target.value; // const: Bindung wird nicht neu zugewiesen.
   const requestId = ++latestSearchRequestId; // const: Bindung wird nicht neu zugewiesen.
 
-  simulateAsyncSearch(term).then(function (resolvedTerm) {
+  simulateAsyncSearch(term).then(function () {
     if (requestId !== latestSearchRequestId) return;
     renderEvidenceList();
   });
@@ -297,46 +346,48 @@ export function handleSearchInput(event) {
 // EVIDENCE DETAIL
 // ---------------------------------------------------------------------
 
-export function openEvidenceDetail(evidenceId) {
+export function openEvidenceDetail(evidenceId: string): void {
   const ev = findEvidenceById(evidenceId); // const: Bindung wird nicht neu zugewiesen.
   if (!ev) return;
-  setSelectedEvidence(ev);
 
   const section = document.getElementById("evidenceDetailSection"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  if (!section) return;
+
+  setSelectedEvidence(ev);
   section.classList.remove("hidden");
 
   renderEvidenceDetail(ev);
   section.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-export function closeEvidenceDetail() {
+export function closeEvidenceDetail(): void {
   const section = document.getElementById("evidenceDetailSection"); // const: DOM-Referenz wird nicht neu zugewiesen.
-  section.classList.add("hidden");
-  section.innerHTML = "";
+  if (section) {
+    section.classList.add("hidden");
+    section.innerHTML = "";
+  }
   setSelectedEvidence(null);
 }
 
-function renderEvidenceDetail(ev) {
+function renderEvidenceDetail(ev: Evidence): void {
   const section = document.getElementById("evidenceDetailSection"); // const: DOM-Referenz wird nicht neu zugewiesen.
+  if (!section) return;
 
-  const personNames = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let p = 0; p < ev.personIds.length; p++) {
-    // let: Schleifenzähler wird erhöht.
-    const person = findPersonById(ev.personIds[p]); // const: Bindung wird nicht neu zugewiesen.
-    personNames.push(person ? person.name : ev.personIds[p]);
+  const personNames: string[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const personId of ev.personIds) {
+    const person = findPersonById(personId); // const: Bindung wird nicht neu zugewiesen.
+    personNames.push(person ? person.name : personId);
   }
 
-  const locationNames = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
-  for (let l = 0; l < ev.locationIds.length; l++) {
-    // let: Schleifenzähler wird erhöht.
-    const loc = findLocationById(ev.locationIds[l]); // const: Bindung wird nicht neu zugewiesen.
-    locationNames.push(loc ? loc.id + " - " + loc.name : ev.locationIds[l]);
+  const locationNames: string[] = []; // const: Array-Inhalt darf sich ändern; Bindung bleibt gleich.
+  for (const locationId of ev.locationIds) {
+    const loc = findLocationById(locationId); // const: Bindung wird nicht neu zugewiesen.
+    locationNames.push(loc ? loc.id + " - " + loc.name : locationId);
   }
 
   let tagsHtml = ""; // let: HTML-Text wird schrittweise erweitert.
-  for (let t = 0; t < ev.tags.length; t++) {
-    // let: Schleifenzähler wird erhöht.
-    tagsHtml += '<span class="tag-chip">' + ev.tags[t] + "</span>";
+  for (const tag of ev.tags) {
+    tagsHtml += '<span class="tag-chip">' + tag + "</span>";
   }
 
   const storedNote = loadNoteForEvidence(ev.id); // const: Bindung wird nicht neu zugewiesen.
@@ -409,35 +460,45 @@ function renderEvidenceDetail(ev) {
 
   section.innerHTML = html;
 
-  document
-    .getElementById("detailStatusSelect")
-    .addEventListener("change", function (e) {
-      ev.status = e.target.value;
+  const statusSelect = getSelectElement("detailStatusSelect");
+  statusSelect?.addEventListener("change", function () {
+    const status = statusSelect.value;
+    if (isEvidenceStatus(status)) {
+      ev.status = status;
       saveEvidenceReview(ev);
       viewRendered.dashboard = false;
       renderEvidenceDetail(ev);
       if (viewRendered.evidence) renderEvidenceList();
-    });
-  document
-    .getElementById("detailRelevanceSelect")
-    .addEventListener("change", function (e) {
-      ev.relevance = e.target.value;
+    }
+  });
+
+  const relevanceSelect = getSelectElement("detailRelevanceSelect");
+  relevanceSelect?.addEventListener("change", function () {
+    const relevance = relevanceSelect.value;
+    if (isEvidenceRelevance(relevance)) {
+      ev.relevance = relevance;
       saveEvidenceReview(ev);
       renderEvidenceDetail(ev);
       if (viewRendered.evidence) renderEvidenceList();
-    });
+    }
+  });
 }
 
-function statusOptionHTML(current, value, label) {
+function statusOptionHTML(
+  current: EvidenceStatus | EvidenceRelevance,
+  value: EvidenceStatus | EvidenceRelevance,
+  label: string,
+): string {
   const currentLower = (current || "").toLowerCase(); // const: Bindung wird nicht neu zugewiesen.
   const selected = currentLower === value ? " selected" : ""; // const: Bindung wird nicht neu zugewiesen.
   return '<option value="' + value + '"' + selected + ">" + label + "</option>";
 }
 
-export function saveCurrentNote() {
-  const textarea = document.getElementById("evidenceNoteInput"); // const: DOM-Referenz wird nicht neu zugewiesen.
+export function saveCurrentNote(): void {
+  const textarea = getTextAreaElement("evidenceNoteInput"); // const: DOM-Referenz wird nicht neu zugewiesen.
   if (!textarea) return;
-  const evidenceId = textarea.getAttribute("data-evidence-id"); // const: Bindung wird nicht neu zugewiesen.
+  const evidenceId = textarea.dataset.evidenceId; // const: Bindung wird nicht neu zugewiesen.
+  if (!evidenceId) return;
   const text = textarea.value; // const: Bindung wird nicht neu zugewiesen.
   saveNoteForEvidence(evidenceId, text);
   const preview = document.getElementById("notePreview"); // const: DOM-Referenz wird nicht neu zugewiesen.
