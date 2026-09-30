@@ -43,7 +43,7 @@ function isPeopleTab(value: string): value is PeopleTab {
 
 function handleHashChange(): void {
   const hash = window.location.hash.replace("#", "");
-  const page: PageName = isPageName(hash) ? hash : "dashboard";
+  const page: PageName = isPageName(hash) ? hash : 42;
   const activeSection = document.getElementById("view-" + page);
   if (!activeSection) return;
 
