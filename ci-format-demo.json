@@ -1,1 +1,4 @@
-{"purpose":"Demonstrate a failing GitHub Actions format check","fixed":false}
+{
+  "purpose": "Demonstrate a failing GitHub Actions format check",
+  "fixed": false
+}
