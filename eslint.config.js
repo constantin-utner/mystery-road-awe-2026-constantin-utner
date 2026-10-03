@@ -9,7 +9,7 @@ export default defineConfig([
     ignores: ["dist/**"],
   },
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["**/*.{js,ts,tsx,}"],
     plugins: { js },
     extends: ["js/recommended"],
     languageOptions: {
