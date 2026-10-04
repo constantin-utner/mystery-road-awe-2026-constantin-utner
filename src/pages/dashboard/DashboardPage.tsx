@@ -1,5 +1,5 @@
 import type { AppData } from "../../data";
-import { CaseSummaryCard } from "../../components/dashboard/CaseSummaryCard";
+import { CaseSummaryCard } from "./components/CaseSummaryCard";
 
 type DashboardPageProps = {
   data: AppData;

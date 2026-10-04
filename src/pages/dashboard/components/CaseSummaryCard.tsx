@@ -1,4 +1,4 @@
-import type { CaseData } from "../../data";
+import type { CaseData } from "../../../data";
 
 type CaseSummaryCardProps = {
   caseData: CaseData;
