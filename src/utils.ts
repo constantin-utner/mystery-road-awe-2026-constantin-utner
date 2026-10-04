@@ -1,18 +1,27 @@
 import type { Evidence, Location, Person } from "./data";
 
-export function findEvidenceById(id: string, evidence: Evidence[]) {
-  return evidence.find((item) => item.id === id) ?? null;
+export function findEvidenceById(
+  id: string,
+  evidence: Evidence[],
+): Evidence | null {
+  return evidence.find((item): boolean => item.id === id) ?? null;
 }
 
-export function findPersonById(id: string, people: Person[]) {
-  return people.find((person) => person.id === id) ?? null;
+export function findPersonById(id: string, people: Person[]): Person | null {
+  return people.find((person): boolean => person.id === id) ?? null;
 }
 
-export function findLocationById(id: string, locations: Location[]) {
-  return locations.find((location) => location.id === id) ?? null;
+export function findLocationById(
+  id: string,
+  locations: Location[],
+): Location | null {
+  return locations.find((location): boolean => location.id === id) ?? null;
 }
 
-export function evidenceMentionsPerson(evidence: Evidence, person: Person) {
+export function evidenceMentionsPerson(
+  evidence: Evidence,
+  person: Person,
+): boolean {
   return evidence.personIds.includes(person.id);
 }
 

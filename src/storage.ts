@@ -18,7 +18,7 @@ export function loadBookmarksFromStorage(): string[] {
   return JSON.parse(storedBookmarks ?? "[]");
 }
 
-export function saveBookmarksToStorage(bookmarks: string[]) {
+export function saveBookmarksToStorage(bookmarks: string[]): void {
   localStorage.setItem("remotion_bookmarks", JSON.stringify(bookmarks));
 }
 
@@ -32,7 +32,7 @@ export function loadNoteForEvidence(evidenceId: string): string {
   return notes[evidenceId] ?? "";
 }
 
-export function saveNoteForEvidence(evidenceId: string, text: string) {
+export function saveNoteForEvidence(evidenceId: string, text: string): void {
   const notes = loadNotesFromStorage();
   notes[evidenceId] = text;
   localStorage.setItem("remotion_notes", JSON.stringify(notes));
@@ -49,7 +49,7 @@ export function saveEvidenceReview(
   evidenceId: string,
   status: string,
   relevance: string,
-) {
+): void {
   const reviews = loadEvidenceReviews();
   reviews[evidenceId] = { status, relevance };
   localStorage.setItem("remotion_evidence_review", JSON.stringify(reviews));
@@ -60,7 +60,7 @@ export function loadHypothesisFromStorage(): HypothesisDraft | null {
   return JSON.parse(storedHypothesis ?? "null");
 }
 
-export function saveHypothesisToStorage(hypothesis: HypothesisDraft) {
+export function saveHypothesisToStorage(hypothesis: HypothesisDraft): void {
   const draft = {
     ...hypothesis,
     savedAt: new Date().toISOString(),
