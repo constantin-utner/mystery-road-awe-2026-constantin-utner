@@ -9,12 +9,13 @@ import type { AppData } from "../data";
 type CurrentPageProps = {
   page: PageName;
   data: AppData;
+  onNavigate: (page: PageName) => void;
 };
 
-export function CurrentPage({ page, data }: CurrentPageProps) {
+export function CurrentPage({ page, data, onNavigate }: CurrentPageProps) {
   switch (page) {
     case "dashboard":
-      return <DashboardPage data={data} />;
+      return <DashboardPage data={data} onNavigate={onNavigate} />;
     case "evidence":
       return <EvidencePage />;
     case "people":
@@ -24,6 +25,6 @@ export function CurrentPage({ page, data }: CurrentPageProps) {
     case "workspace":
       return <WorkspacePage />;
     default:
-      return <DashboardPage data={data} />;
+      return <DashboardPage data={data} onNavigate={onNavigate} />;
   }
 }

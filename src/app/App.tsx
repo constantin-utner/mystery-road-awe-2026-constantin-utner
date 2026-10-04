@@ -18,7 +18,7 @@ export function App({ currentPage, data }: AppProps) {
     <>
       <AppHeader currentPage={currentPage} onNavigate={navigateTo} />
       <main className="app-main">
-        <CurrentPage page={currentPage} data={data} />
+        <CurrentPage page={currentPage} data={data} onNavigate={navigateTo} />
       </main>
       <AppFooter />
     </>
