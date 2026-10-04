@@ -3,6 +3,16 @@ export type EvidenceReview = {
   relevance: string;
 };
 
+export type HypothesisDraft = {
+  suspectId: string;
+  nature: string;
+  evidenceIds: string[];
+  confidence: string;
+  explanation: string;
+  alternative: string;
+  savedAt?: string;
+};
+
 export function loadBookmarksFromStorage(): string[] {
   const storedBookmarks = localStorage.getItem("remotion_bookmarks");
   return JSON.parse(storedBookmarks ?? "[]");
@@ -43,4 +53,17 @@ export function saveEvidenceReview(
   const reviews = loadEvidenceReviews();
   reviews[evidenceId] = { status, relevance };
   localStorage.setItem("remotion_evidence_review", JSON.stringify(reviews));
+}
+
+export function loadHypothesisFromStorage(): HypothesisDraft | null {
+  const storedHypothesis = localStorage.getItem("remotion_hypothesis");
+  return JSON.parse(storedHypothesis ?? "null");
+}
+
+export function saveHypothesisToStorage(hypothesis: HypothesisDraft) {
+  const draft = {
+    ...hypothesis,
+    savedAt: new Date().toISOString(),
+  };
+  localStorage.setItem("remotion_hypothesis", JSON.stringify(draft));
 }
