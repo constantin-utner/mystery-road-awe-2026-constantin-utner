@@ -1,9 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
-
-type PageName =
-  "dashboard" | "evidence" | "people" | "timeline" | "workspace";
+import { loadAllData } from "./data";
+import type { PageName } from "./app/pageTypes";
 
 const container = document.getElementById("react-root");
 
@@ -12,6 +11,9 @@ if (!container) {
 }
 
 const root = createRoot(container);
+
+// Erst die Daten laden, danach die App rendern.
+const data = await loadAllData();
 
 function getPageFromHash(): PageName {
   switch (window.location.hash) {
@@ -31,11 +33,11 @@ function getPageFromHash(): PageName {
 function renderApp() {
   root.render(
     <StrictMode>
-      <App currentPage={getPageFromHash()} />
+      <App currentPage={getPageFromHash()} data={data} />
     </StrictMode>,
   );
 }
 
-// Der URL-Hash hält die aktuelle Seite; Änderungen aktualisieren React.
+// Bei einem Seitenwechsel erneut rendern.
 window.addEventListener("hashchange", renderApp);
 renderApp();

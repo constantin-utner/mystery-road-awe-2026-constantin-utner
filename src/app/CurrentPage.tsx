@@ -4,15 +4,17 @@ import { EvidencePage } from "../pages/evidence/EvidencePage";
 import { PeopleLocationsPage } from "../pages/people-locations/PeopleLocationsPage";
 import { TimelinePage } from "../pages/timeline/TimelinePage";
 import { WorkspacePage } from "../pages/workspace/WorkspacePage";
+import type { AppData } from "../data";
 
 type CurrentPageProps = {
   page: PageName;
+  data: AppData;
 };
 
-export function CurrentPage({ page }: CurrentPageProps) {
+export function CurrentPage({ page, data }: CurrentPageProps) {
   switch (page) {
     case "dashboard":
-      return <DashboardPage />;
+      return <DashboardPage data={data} />;
     case "evidence":
       return <EvidencePage />;
     case "people":
@@ -22,6 +24,6 @@ export function CurrentPage({ page }: CurrentPageProps) {
     case "workspace":
       return <WorkspacePage />;
     default:
-      return <DashboardPage />;
+      return <DashboardPage data={data} />;
   }
 }
