@@ -4,6 +4,8 @@ import { HowToUsePortal } from "./components/HowToUsePortal";
 import type { PageName } from "../../app/pageTypes";
 import { StatsSection } from "./components/StatsSection";
 import { ReviewProgress } from "./components/ReviewProgress";
+import { RecentEvidence } from "./components/RecentEvidence";
+import { RecentTimeline } from "./components/RecentTimeline";
 
 type DashboardPageProps = {
   data: AppData;
@@ -35,6 +37,10 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
         reviewedCount={reviewedCount}
         evidenceCount={data.evidence.length}
       />
+      <div className="dashboard-columns">
+        <RecentEvidence evidence={data.evidence} />
+        <RecentTimeline timeline={data.timeline} />
+      </div>
     </section>
   );
 }
