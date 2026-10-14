@@ -1,4 +1,5 @@
 import type { Person } from "../../../data";
+import { Card } from "../../../components/shared/Card";
 
 type PersonCardProps = {
   person: Person;
@@ -6,7 +7,7 @@ type PersonCardProps = {
 
 export function PersonCard({ person }: PersonCardProps) {
   return (
-    <div className="person-card">
+    <Card className="person-card">
       <div className="person-card-header">
         <img
           className="person-avatar"
@@ -27,6 +28,6 @@ export function PersonCard({ person }: PersonCardProps) {
         ))}
       </ul>
       <div className="person-statement">&ldquo;{person.statement}&rdquo;</div>
-    </div>
+    </Card>
   );
 }

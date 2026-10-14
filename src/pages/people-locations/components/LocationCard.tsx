@@ -1,4 +1,5 @@
 import type { Location } from "../../../data";
+import { Card } from "../../../components/shared/Card";
 
 type LocationCardProps = {
   location: Location;
@@ -6,7 +7,7 @@ type LocationCardProps = {
 
 export function LocationCard({ location }: LocationCardProps) {
   return (
-    <div className="location-card">
+    <Card className="location-card">
       <h3>
         {location.id} &mdash; {location.name}
       </h3>
@@ -19,6 +20,6 @@ export function LocationCard({ location }: LocationCardProps) {
           <li key={item}>{item}</li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 }
