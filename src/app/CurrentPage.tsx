@@ -19,7 +19,9 @@ export function CurrentPage({ page, data, onNavigate }: CurrentPageProps) {
     case "evidence":
       return <EvidencePage />;
     case "people":
-      return <PeopleLocationsPage />;
+      return (
+        <PeopleLocationsPage people={data.people} locations={data.locations} />
+      );
     case "timeline":
       return <TimelinePage />;
     case "workspace":
