@@ -1,8 +1,15 @@
-export function TimelinePage() {
+import type { TimelineEvent } from "../../data";
+import { TimelineList } from "./components/TimelineList";
+
+type TimelinePageProps = {
+  timeline: TimelineEvent[];
+};
+
+export function TimelinePage({ timeline }: TimelinePageProps) {
   return (
     <section>
       <h2>Timeline</h2>
-      <p>Hier wird später der zeitliche Ablauf angezeigt.</p>
+      <TimelineList events={timeline} />
     </section>
   );
 }

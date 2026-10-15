@@ -23,7 +23,7 @@ export function CurrentPage({ page, data, onNavigate }: CurrentPageProps) {
         <PeopleLocationsPage people={data.people} locations={data.locations} />
       );
     case "timeline":
-      return <TimelinePage />;
+      return <TimelinePage timeline={data.timeline} />;
     case "workspace":
       return <WorkspacePage />;
     default:
