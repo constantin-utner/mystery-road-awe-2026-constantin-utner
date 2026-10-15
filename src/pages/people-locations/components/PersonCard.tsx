@@ -6,6 +6,8 @@ type PersonCardProps = {
 };
 
 export function PersonCard({ person }: PersonCardProps) {
+  const hasStatement = person.statement.trim().length > 0;
+
   return (
     <Card className="person-card">
       <div className="person-card-header">
@@ -27,7 +29,11 @@ export function PersonCard({ person }: PersonCardProps) {
           <li key={responsibility}>{responsibility}</li>
         ))}
       </ul>
-      <div className="person-statement">&ldquo;{person.statement}&rdquo;</div>
+      {hasStatement ? (
+        <div className="person-statement">&ldquo;{person.statement}&rdquo;</div>
+      ) : (
+        <p>No statement available.</p>
+      )}
     </Card>
   );
 }

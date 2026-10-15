@@ -6,6 +6,10 @@ type PeopleViewProps = {
 };
 
 export function PeopleView({ people }: PeopleViewProps) {
+  if (people.length === 0) {
+    return <p>No people available.</p>;
+  }
+
   return (
     <div className="people-grid">
       {people.map((person) => (
