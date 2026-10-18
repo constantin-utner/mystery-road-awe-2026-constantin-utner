@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
 import { loadAllData } from "./data";
 import type { PageName } from "./app/pageTypes";
+import { KeysDemo } from "./demos/keys/KeysDemo";
 
 const container = document.getElementById("react-root");
 
@@ -31,6 +32,20 @@ function getPageFromHash(): PageName {
 }
 
 function renderApp() {
+  // Temporäre Demo: Der vorhandene hashchange-Listener rendert dieselbe Root.
+  if (window.location.hash.split("?")[0] === "#keys-demo") {
+    const params = new URLSearchParams(window.location.hash.split("?")[1]);
+    root.render(
+      <StrictMode>
+        <KeysDemo
+          reversed={params.get("reversed") === "1"}
+          stableKeys={params.get("mode") === "id"}
+        />
+      </StrictMode>,
+    );
+    return;
+  }
+
   root.render(
     <StrictMode>
       <App currentPage={getPageFromHash()} data={data} />
