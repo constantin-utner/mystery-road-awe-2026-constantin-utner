@@ -13,7 +13,7 @@ export function PersonCard({ person }: PersonCardProps) {
       <div className="person-card-header">
         <img
           className="person-avatar"
-          src={person.avatar}
+          src={`${import.meta.env.BASE_URL}${person.avatar}`}
           alt={`Portrait of ${person.name}`}
         />
         <div>

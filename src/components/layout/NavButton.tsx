@@ -1,18 +1,17 @@
+import { NavLink } from "react-router";
+
 type NavButtonProps = {
   label: string;
-  active: boolean;
-  onClick: () => void;
+  to: string;
 };
 
-export function NavButton({ label, active, onClick }: NavButtonProps) {
+export function NavButton({ label, to }: NavButtonProps) {
   return (
-    <button
-      type="button"
-      className={active ? "nav-btn active" : "nav-btn"}
-      aria-current={active ? "page" : undefined}
-      onClick={onClick}
+    <NavLink
+      to={to}
+      className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
     >
       {label}
-    </button>
+    </NavLink>
   );
 }

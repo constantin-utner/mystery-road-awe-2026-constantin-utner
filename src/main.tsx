@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import { App } from "./app/App";
 import { loadAllData } from "./data";
-import type { PageName } from "./app/pageTypes";
 
 const container = document.getElementById("react-root");
 
@@ -11,33 +11,12 @@ if (!container) {
 }
 
 const root = createRoot(container);
-
-// Erst die Daten laden, danach die App rendern.
 const data = await loadAllData();
 
-function getPageFromHash(): PageName {
-  switch (window.location.hash) {
-    case "#evidence":
-      return "evidence";
-    case "#people":
-      return "people";
-    case "#timeline":
-      return "timeline";
-    case "#workspace":
-      return "workspace";
-    default:
-      return "dashboard";
-  }
-}
-
-function renderApp() {
-  root.render(
-    <StrictMode>
-      <App currentPage={getPageFromHash()} data={data} />
-    </StrictMode>,
-  );
-}
-
-// Bei einem Seitenwechsel erneut rendern.
-window.addEventListener("hashchange", renderApp);
-renderApp();
+root.render(
+  <StrictMode>
+    <BrowserRouter>
+      <App data={data} />
+    </BrowserRouter>
+  </StrictMode>,
+);

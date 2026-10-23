@@ -1,24 +1,27 @@
+import { useNavigate } from "react-router";
 import type { PageName } from "./pageTypes";
+import type { AppData } from "../data";
 import { AppHeader } from "../components/layout/AppHeader";
 import { AppFooter } from "../components/layout/AppFooter";
 import { CurrentPage } from "./CurrentPage";
-import type { AppData } from "../data";
 
 type AppProps = {
-  currentPage: PageName;
   data: AppData;
 };
 
-export function App({ currentPage, data }: AppProps) {
+export function App({ data }: AppProps) {
+  const navigate = useNavigate();
+
   function navigateTo(page: PageName) {
-    window.location.hash = page;
+    const path = page === "people" ? "/team" : `/${page}`;
+    navigate(path);
   }
 
   return (
     <>
-      <AppHeader currentPage={currentPage} onNavigate={navigateTo} />
+      <AppHeader />
       <main className="app-main">
-        <CurrentPage page={currentPage} data={data} onNavigate={navigateTo} />
+        <CurrentPage data={data} onNavigate={navigateTo} />
       </main>
       <AppFooter />
     </>
