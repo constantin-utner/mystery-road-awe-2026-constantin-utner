@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { HashRouter } from "react-router";
 import { App } from "./app/App";
 import { loadAllData } from "./data";
 
@@ -15,8 +15,8 @@ const data = await loadAllData();
 
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <App data={data} />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 );
