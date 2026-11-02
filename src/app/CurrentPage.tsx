@@ -49,7 +49,10 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
           />
         }
       />
-      <Route path="/workspace" element={<WorkspacePage />} />
+      <Route
+        path="/workspace"
+        element={<WorkspacePage evidence={data.evidence} />}
+      />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

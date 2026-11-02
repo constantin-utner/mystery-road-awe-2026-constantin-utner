@@ -1,16 +1,22 @@
-export function WorkspacePage() {
+import type { Evidence } from "../../data";
+import { loadBookmarksFromStorage } from "../../storage";
+import { BookmarkedEvidenceSection } from "./components/BookmarkedEvidenceSection";
+
+type WorkspacePageProps = {
+  evidence: Evidence[];
+};
+
+export function WorkspacePage({ evidence }: WorkspacePageProps) {
+  const bookmarks = loadBookmarksFromStorage();
+  const bookmarkedEvidence = evidence.filter((item) =>
+    bookmarks.includes(item.id),
+  );
+
   return (
     <section>
       <h2>Investigator Workspace</h2>
       <div className="workspace-grid">
-        <section className="workspace-col">
-          <h3>Bookmarked Evidence</h3>
-          <div className="bookmarks-list">
-            <p>
-              No bookmarked evidence yet. Bookmark items from the Evidence view.
-            </p>
-          </div>
-        </section>
+        <BookmarkedEvidenceSection evidence={bookmarkedEvidence} />
 
         <section className="workspace-col">
           <h3>Personal Notes</h3>
