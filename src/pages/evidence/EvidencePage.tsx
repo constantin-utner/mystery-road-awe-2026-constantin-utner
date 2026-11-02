@@ -1,6 +1,7 @@
 import type { Evidence, Location, Person } from "../../data";
 import { EvidenceGrid } from "./components/EvidenceGrid";
 import { EvidenceFilters } from "./components/EvidenceFilters";
+import { EvidenceDetail } from "./components/EvidenceDetail";
 
 type EvidencePageProps = {
   evidence: Evidence[];
@@ -13,6 +14,8 @@ export function EvidencePage({
   people,
   locations,
 }: EvidencePageProps) {
+  const previewEvidence = evidence[0];
+
   return (
     <section>
       <h2>Evidence Catalogue</h2>
@@ -22,6 +25,7 @@ export function EvidencePage({
         locations={locations}
       />
       <EvidenceGrid evidence={evidence} />
+      {previewEvidence && <EvidenceDetail evidence={previewEvidence} />}
     </section>
   );
 }
