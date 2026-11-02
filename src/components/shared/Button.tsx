@@ -1,14 +1,22 @@
 type ButtonProps = {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
+  disabled?: boolean;
+  size?: "small" | "normal";
 };
 
-export function Button({ label, onClick }: ButtonProps) {
+export function Button({
+  label,
+  onClick,
+  disabled = false,
+  size = "small",
+}: ButtonProps) {
   return (
     <button
       type="button"
-      className="btn btn-secondary btn-small"
+      className={`btn btn-secondary${size === "small" ? " btn-small" : ""}`}
       onClick={onClick}
+      disabled={disabled}
     >
       {label}
     </button>
