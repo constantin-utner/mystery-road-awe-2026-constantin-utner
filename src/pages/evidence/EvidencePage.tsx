@@ -25,7 +25,13 @@ export function EvidencePage({
         locations={locations}
       />
       <EvidenceGrid evidence={evidence} />
-      {previewEvidence && <EvidenceDetail evidence={previewEvidence} />}
+      {previewEvidence && (
+        <EvidenceDetail
+          evidence={previewEvidence}
+          people={people}
+          locations={locations}
+        />
+      )}
     </section>
   );
 }

@@ -1,11 +1,29 @@
-import type { Evidence } from "../../../data";
-import { formatDate } from "../../../utils";
+import type { Evidence, Location, Person } from "../../../data";
+import { findLocationById, findPersonById, formatDate } from "../../../utils";
+import { CriticalNotice } from "./CriticalNotice";
+import { TagBadge } from "./TagBadge";
 
 type EvidenceDetailProps = {
   evidence: Evidence;
+  people: Person[];
+  locations: Location[];
 };
 
-export function EvidenceDetail({ evidence }: EvidenceDetailProps) {
+export function EvidenceDetail({
+  evidence,
+  people,
+  locations,
+}: EvidenceDetailProps) {
+  const relatedPeople = evidence.personIds.map((id) => {
+    const person = findPersonById(id, people);
+    return person ? person.name : id;
+  });
+
+  const relatedLocations = evidence.locationIds.map((id) => {
+    const location = findLocationById(id, locations);
+    return location ? `${location.id} - ${location.name}` : id;
+  });
+
   return (
     <section className="evidence-detail">
       <div className="evidence-detail-header">
@@ -22,12 +40,31 @@ export function EvidenceDetail({ evidence }: EvidenceDetailProps) {
         </button>
       </div>
 
+      {evidence.tags.includes("critical") && <CriticalNotice />}
+
       <div className="detail-field">
         <strong>Summary</strong>
         {evidence.summary}
       </div>
 
       <div className="evidence-detail-content">{evidence.content}</div>
+
+      <div className="detail-field">
+        <strong>Related people</strong>
+        {relatedPeople.join(", ")}
+      </div>
+
+      <div className="detail-field">
+        <strong>Related locations</strong>
+        {relatedLocations.join(", ")}
+      </div>
+
+      <div className="detail-field">
+        <strong>Tags</strong>
+        {evidence.tags.map((tag) => (
+          <TagBadge key={tag} tag={tag} />
+        ))}
+      </div>
     </section>
   );
 }
