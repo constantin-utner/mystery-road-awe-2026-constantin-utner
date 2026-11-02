@@ -1,8 +1,10 @@
 import type { Evidence, Location, Person } from "../../../data";
 import { SelectField } from "../../../components/shared/SelectField";
+import { loadNoteForEvidence } from "../../../storage";
 import { findLocationById, findPersonById, formatDate } from "../../../utils";
 import { CriticalNotice } from "./CriticalNotice";
 import { TagBadge } from "./TagBadge";
+import { NoteEditor } from "./NoteEditor";
 
 type EvidenceDetailProps = {
   evidence: Evidence;
@@ -15,6 +17,8 @@ export function EvidenceDetail({
   people,
   locations,
 }: EvidenceDetailProps) {
+  const note = loadNoteForEvidence(evidence.id);
+
   const relatedPeople = evidence.personIds.map((id) => {
     const person = findPersonById(id, people);
     return person ? person.name : id;
@@ -94,6 +98,8 @@ export function EvidenceDetail({
           <option value="irrelevant">Irrelevant</option>
         </SelectField>
       </div>
+
+      <NoteEditor note={note} />
     </section>
   );
 }

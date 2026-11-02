@@ -3,6 +3,7 @@ type ButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   size?: "small" | "normal";
+  variant?: "secondary" | "primary";
 };
 
 export function Button({
@@ -10,11 +11,12 @@ export function Button({
   onClick,
   disabled = false,
   size = "small",
+  variant = "secondary",
 }: ButtonProps) {
   return (
     <button
       type="button"
-      className={`btn btn-secondary${size === "small" ? " btn-small" : ""}`}
+      className={`btn btn-${variant}${size === "small" ? " btn-small" : ""}`}
       onClick={onClick}
       disabled={disabled}
     >
