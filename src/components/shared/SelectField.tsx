@@ -4,6 +4,7 @@ type SelectFieldProps = {
   name: string;
   label: string;
   hideLabel?: boolean;
+  defaultValue?: string;
   children: ReactNode;
 };
 
@@ -11,6 +12,7 @@ export function SelectField({
   name,
   label,
   hideLabel = false,
+  defaultValue,
   children,
 }: SelectFieldProps) {
   return (
@@ -21,7 +23,7 @@ export function SelectField({
       >
         {label}
       </label>
-      <select id={name} name={name}>
+      <select id={name} name={name} defaultValue={defaultValue}>
         {children}
       </select>
     </>

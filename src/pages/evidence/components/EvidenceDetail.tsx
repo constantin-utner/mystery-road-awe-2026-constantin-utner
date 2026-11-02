@@ -1,4 +1,5 @@
 import type { Evidence, Location, Person } from "../../../data";
+import { SelectField } from "../../../components/shared/SelectField";
 import { findLocationById, findPersonById, formatDate } from "../../../utils";
 import { CriticalNotice } from "./CriticalNotice";
 import { TagBadge } from "./TagBadge";
@@ -64,6 +65,34 @@ export function EvidenceDetail({
         {evidence.tags.map((tag) => (
           <TagBadge key={tag} tag={tag} />
         ))}
+      </div>
+
+      <div className="detail-field">
+        <strong>Review status</strong>
+        <SelectField
+          name="detailStatus"
+          label="Review status"
+          defaultValue={evidence.status}
+          hideLabel
+        >
+          <option value="unreviewed">Unreviewed</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="flagged">Flagged</option>
+        </SelectField>
+      </div>
+
+      <div className="detail-field">
+        <strong>Relevance</strong>
+        <SelectField
+          name="detailRelevance"
+          label="Relevance"
+          defaultValue={evidence.relevance}
+          hideLabel
+        >
+          <option value="unknown">Unknown</option>
+          <option value="relevant">Relevant</option>
+          <option value="irrelevant">Irrelevant</option>
+        </SelectField>
       </div>
     </section>
   );
