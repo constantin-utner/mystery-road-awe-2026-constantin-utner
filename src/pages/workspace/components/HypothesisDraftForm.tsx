@@ -1,5 +1,7 @@
 import type { Evidence, Person } from "../../../data";
 import { SelectField } from "../../../components/shared/SelectField";
+import { TextAreaField } from "../../../components/shared/TextAreaField";
+import { Button } from "../../../components/shared/Button";
 import { EvidenceMultiSelect } from "./EvidenceMultiSelect";
 import { ConfidenceSlider } from "./ConfidenceSlider";
 
@@ -46,6 +48,38 @@ export function HypothesisDraftForm({
 
         <EvidenceMultiSelect evidence={evidence} />
         <ConfidenceSlider />
+
+        <div className="form-row">
+          <TextAreaField
+            name="hypExplanation"
+            label="Written explanation"
+            rows={4}
+            placeholder="Explain your reasoning…"
+            variant="form"
+          />
+        </div>
+
+        <div className="form-row">
+          <TextAreaField
+            name="hypAlternative"
+            label="Alternative explanation"
+            rows={3}
+            placeholder="What else could explain the evidence?"
+            variant="form"
+          />
+        </div>
+
+        <div className="form-actions">
+          <Button
+            label="Save hypothesis draft"
+            variant="primary"
+            size="normal"
+            disabled
+          />
+          <span className="saved-msg hidden" role="status">
+            Saved
+          </span>
+        </div>
       </form>
     </section>
   );

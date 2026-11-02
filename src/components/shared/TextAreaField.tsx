@@ -3,6 +3,8 @@ type TextAreaFieldProps = {
   label: string;
   defaultValue?: string;
   placeholder?: string;
+  rows?: number;
+  variant?: "note" | "form";
 };
 
 export function TextAreaField({
@@ -10,17 +12,19 @@ export function TextAreaField({
   label,
   defaultValue,
   placeholder,
+  rows = 3,
+  variant = "note",
 }: TextAreaFieldProps) {
   return (
     <>
       <label htmlFor={name}>
-        <strong>{label}</strong>
+        {variant === "note" ? <strong>{label}</strong> : label}
       </label>
       <textarea
         id={name}
         name={name}
-        className="note-textarea"
-        rows={3}
+        className={variant === "note" ? "note-textarea" : undefined}
+        rows={rows}
         defaultValue={defaultValue}
         placeholder={placeholder}
       />
