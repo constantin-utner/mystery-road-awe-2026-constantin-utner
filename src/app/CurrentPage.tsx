@@ -39,7 +39,10 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
         path="/timeline"
         element={<TimelinePage timeline={data.timeline} />}
       />
-      <Route path="/evidence" element={<EvidencePage />} />
+      <Route
+        path="/evidence"
+        element={<EvidencePage evidence={data.evidence} />}
+      />
       <Route path="/workspace" element={<WorkspacePage />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
