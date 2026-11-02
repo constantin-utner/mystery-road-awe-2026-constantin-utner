@@ -1,11 +1,17 @@
-import type { Person } from "../../../data";
+import type { Evidence, Person } from "../../../data";
 import { SelectField } from "../../../components/shared/SelectField";
+import { EvidenceMultiSelect } from "./EvidenceMultiSelect";
+import { ConfidenceSlider } from "./ConfidenceSlider";
 
 type HypothesisDraftFormProps = {
   people: Person[];
+  evidence: Evidence[];
 };
 
-export function HypothesisDraftForm({ people }: HypothesisDraftFormProps) {
+export function HypothesisDraftForm({
+  people,
+  evidence,
+}: HypothesisDraftFormProps) {
   return (
     <section className="hypothesis-card">
       <h3>Hypothesis Draft</h3>
@@ -37,6 +43,9 @@ export function HypothesisDraftForm({ people }: HypothesisDraftFormProps) {
             <option value="unclear">Unclear</option>
           </SelectField>
         </div>
+
+        <EvidenceMultiSelect evidence={evidence} />
+        <ConfidenceSlider />
       </form>
     </section>
   );

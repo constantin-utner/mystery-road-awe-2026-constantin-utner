@@ -26,7 +26,7 @@ export function WorkspacePage({ evidence, people }: WorkspacePageProps) {
         <PersonalNotesSection evidence={evidenceWithNotes} notes={notes} />
       </div>
 
-      <HypothesisDraftForm people={people} />
+      <HypothesisDraftForm people={people} evidence={evidence} />
     </section>
   );
 }
