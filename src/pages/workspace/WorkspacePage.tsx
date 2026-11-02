@@ -1,6 +1,7 @@
 import type { Evidence } from "../../data";
-import { loadBookmarksFromStorage } from "../../storage";
+import { loadBookmarksFromStorage, loadNotesFromStorage } from "../../storage";
 import { BookmarkedEvidenceSection } from "./components/BookmarkedEvidenceSection";
+import { PersonalNotesSection } from "./components/PersonalNotesSection";
 
 type WorkspacePageProps = {
   evidence: Evidence[];
@@ -11,6 +12,8 @@ export function WorkspacePage({ evidence }: WorkspacePageProps) {
   const bookmarkedEvidence = evidence.filter((item) =>
     bookmarks.includes(item.id),
   );
+  const notes = loadNotesFromStorage();
+  const evidenceWithNotes = evidence.filter((item) => notes[item.id]);
 
   return (
     <section>
@@ -18,16 +21,7 @@ export function WorkspacePage({ evidence }: WorkspacePageProps) {
       <div className="workspace-grid">
         <BookmarkedEvidenceSection evidence={bookmarkedEvidence} />
 
-        <section className="workspace-col">
-          <h3>Personal Notes</h3>
-          <p className="hint-text">
-            Notes are attached to whichever evidence item is currently open in
-            the Evidence view.
-          </p>
-          <div className="notes-list">
-            <p>No notes yet. Add one from an evidence item's detail view.</p>
-          </div>
-        </section>
+        <PersonalNotesSection evidence={evidenceWithNotes} notes={notes} />
       </div>
 
       <section className="hypothesis-card">
