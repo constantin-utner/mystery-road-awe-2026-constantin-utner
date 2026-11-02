@@ -8,7 +8,7 @@ type EvidenceGridProps = {
 export function EvidenceGrid({ evidence }: EvidenceGridProps) {
   return (
     <div className="evidence-grid">
-      {evidence.length === 0 && <p>No evidence loaded yet.</p>}
+      {evidence.length === 0 && <p>No evidence matches the current filters.</p>}
 
       {evidence.map((item) => (
         <EvidenceCard key={item.id} evidence={item} />

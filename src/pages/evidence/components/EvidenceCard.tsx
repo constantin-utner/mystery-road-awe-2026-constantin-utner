@@ -16,7 +16,7 @@ export function EvidenceCard({ evidence }: EvidenceCardProps) {
       <div className="evidence-meta">
         {evidence.id} · {evidence.type} · {formatDate(evidence.timestamp)}
       </div>
-      <p className="evidence-summary">{evidence.summary}</p>
+      <div className="evidence-summary">{evidence.summary}</div>
       {evidence.tags.includes("critical") && (
         <StatusBadge status="Critical" variant="critical" />
       )}
