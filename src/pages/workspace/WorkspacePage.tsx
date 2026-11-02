@@ -1,13 +1,15 @@
-import type { Evidence } from "../../data";
+import type { Evidence, Person } from "../../data";
 import { loadBookmarksFromStorage, loadNotesFromStorage } from "../../storage";
 import { BookmarkedEvidenceSection } from "./components/BookmarkedEvidenceSection";
 import { PersonalNotesSection } from "./components/PersonalNotesSection";
+import { HypothesisDraftForm } from "./components/HypothesisDraftForm";
 
 type WorkspacePageProps = {
   evidence: Evidence[];
+  people: Person[];
 };
 
-export function WorkspacePage({ evidence }: WorkspacePageProps) {
+export function WorkspacePage({ evidence, people }: WorkspacePageProps) {
   const bookmarks = loadBookmarksFromStorage();
   const bookmarkedEvidence = evidence.filter((item) =>
     bookmarks.includes(item.id),
@@ -24,9 +26,7 @@ export function WorkspacePage({ evidence }: WorkspacePageProps) {
         <PersonalNotesSection evidence={evidenceWithNotes} notes={notes} />
       </div>
 
-      <section className="hypothesis-card">
-        <h3>Hypothesis Draft</h3>
-      </section>
+      <HypothesisDraftForm people={people} />
     </section>
   );
 }
