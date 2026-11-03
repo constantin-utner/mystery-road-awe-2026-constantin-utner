@@ -22,6 +22,7 @@ export function EvidencePage({
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedRelevance, setSelectedRelevance] = useState("");
+  const [sortOrder, setSortOrder] = useState("date-desc");
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -30,8 +31,7 @@ export function EvidencePage({
       .toLowerCase();
 
     const matchesSearch = searchableText.includes(normalizedSearchTerm);
-    const matchesType =
-      selectedType === "" || item.type.toLowerCase() === selectedType;
+    const matchesType = selectedType === "" || item.type === selectedType;
 
     const matchesPerson =
       selectedPerson === "" || item.personIds.includes(selectedPerson);
@@ -51,6 +51,23 @@ export function EvidencePage({
       matchesStatus &&
       matchesRelevance
     );
+  });
+
+  const sortedEvidence = [...filteredEvidence].sort((a, b) => {
+    switch (sortOrder) {
+      case "date-asc":
+        return (
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+      case "title-asc":
+        return a.title.localeCompare(b.title);
+      case "title-desc":
+        return b.title.localeCompare(a.title);
+      default:
+        return (
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+    }
   });
 
   function handleSearchChange(value: string) {
@@ -78,10 +95,12 @@ export function EvidencePage({
         onStatusChange={setSelectedStatus}
         selectedRelevance={selectedRelevance}
         onRelevanceChange={setSelectedRelevance}
+        sortOrder={sortOrder}
+        onSortChange={setSortOrder}
       />
       <div>
         <EvidenceLoadingIndicator />
-        <EvidenceGrid evidence={filteredEvidence} />
+        <EvidenceGrid evidence={sortedEvidence} />
       </div>
       {previewEvidence && (
         <EvidenceDetail

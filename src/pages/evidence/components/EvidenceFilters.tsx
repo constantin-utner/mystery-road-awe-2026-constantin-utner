@@ -19,6 +19,8 @@ type EvidenceFiltersProps = {
   onStatusChange: (value: string) => void;
   selectedRelevance: string;
   onRelevanceChange: (value: string) => void;
+  sortOrder: string;
+  onSortChange: (value: string) => void;
 };
 
 export function EvidenceFilters({
@@ -37,11 +39,13 @@ export function EvidenceFilters({
   onStatusChange,
   selectedRelevance,
   onRelevanceChange,
+  sortOrder,
+  onSortChange,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
   for (const item of evidence) {
-    const type = item.type.toLowerCase();
+    const type = item.type;
     if (!types.includes(type)) types.push(type);
   }
 
@@ -123,7 +127,13 @@ export function EvidenceFilters({
           <option value="irrelevant">Irrelevant</option>
         </SelectField>
 
-        <SelectField name="sort" label="Sort" hideLabel>
+        <SelectField
+          name="sort"
+          label="Sort"
+          hideLabel
+          value={sortOrder}
+          onValueChange={onSortChange}
+        >
           <option value="date-desc">Newest first</option>
           <option value="date-asc">Oldest first</option>
           <option value="title-asc">Title (A–Z)</option>

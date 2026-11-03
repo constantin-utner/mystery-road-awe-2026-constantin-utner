@@ -82,6 +82,10 @@ async function loadCorePeopleAndLocations(): Promise<{
   return { caseData, people, locations };
 }
 
+function normalizeCategory(value: unknown): string {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
 async function loadEvidenceData(): Promise<Evidence[]> {
   const response = await fetch("data/evidence.json");
   const evidence: Evidence[] = await response.json();
@@ -90,12 +94,19 @@ async function loadEvidenceData(): Promise<Evidence[]> {
 
   return evidence.map((item): Evidence => {
     const review = reviews[item.id];
+    const type = normalizeCategory(item.type);
+    const status = normalizeCategory(review?.status ?? item.status);
+    const relevance = normalizeCategory(review?.relevance ?? item.relevance);
 
     return {
       ...item,
-      type: item.type.toLowerCase(),
-      status: review?.status ?? item.status,
-      relevance: review?.relevance ?? item.relevance,
+      type: type || "unknown",
+      status: ["unreviewed", "reviewed", "flagged"].includes(status)
+        ? status
+        : "unreviewed",
+      relevance: ["unknown", "relevant", "irrelevant"].includes(relevance)
+        ? relevance
+        : "unknown",
       bookmarked: bookmarks.includes(item.id),
     };
   });
