@@ -17,6 +17,7 @@ export function EvidencePage({
   locations,
 }: EvidencePageProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -24,7 +25,11 @@ export function EvidencePage({
       .join(" ")
       .toLowerCase();
 
-    return searchableText.includes(normalizedSearchTerm);
+    const matchesSearch = searchableText.includes(normalizedSearchTerm);
+    const matchesType =
+      selectedType === "" || item.type.toLowerCase() === selectedType;
+
+    return matchesSearch && matchesType;
   });
 
   function handleSearchChange(value: string) {
@@ -42,6 +47,8 @@ export function EvidencePage({
         locations={locations}
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
+        selectedType={selectedType}
+        onTypeChange={setSelectedType}
       />
       <div>
         <EvidenceLoadingIndicator />

@@ -1,3 +1,4 @@
+import type { Evidence, Location, Person } from "../../../data";
 import { Button } from "../../../components/shared/Button";
 import { SelectField } from "../../../components/shared/SelectField";
 import { SearchField } from "./SearchField";
@@ -8,6 +9,8 @@ type EvidenceFiltersProps = {
   locations: Location[];
   searchTerm: string;
   onSearchChange: (value: string) => void;
+  selectedType: string;
+  onTypeChange: (value: string) => void;
 };
 
 export function EvidenceFilters({
@@ -16,6 +19,8 @@ export function EvidenceFilters({
   locations,
   searchTerm,
   onSearchChange,
+  selectedType,
+  onTypeChange,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
@@ -29,7 +34,13 @@ export function EvidenceFilters({
       <div className="toolbar-row">
         <SearchField value={searchTerm} onValueChange={onSearchChange} />
 
-        <SelectField name="type" label="Type" hideLabel>
+        <SelectField
+          name="type"
+          label="Type"
+          hideLabel
+          value={selectedType}
+          onValueChange={onTypeChange}
+        >
           <option value="">All types</option>
           {types.map((type) => (
             <option key={type} value={type}>
@@ -84,4 +95,3 @@ export function EvidenceFilters({
     </div>
   );
 }
-import type { Evidence, Location, Person } from "../../../data";
