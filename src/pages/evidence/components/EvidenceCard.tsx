@@ -23,6 +23,9 @@ export function EvidenceCard({ evidence }: EvidenceCardProps) {
     const bookmarks = loadBookmarksFromStorage();
     const nextIsBookmarked = !isBookmarked;
 
+    // Exercise 5 | Demo 3 | Task 1: Immutable Lösung.
+    // Spread fügt hinzu, filter entfernt. Beide erstellen ein neues Array mit neuer Referenz.
+    // Das bisherige Array "bookmarks" bleibt unverändert mit gleicher Referenz.
     const nextBookmarks = nextIsBookmarked
       ? [...bookmarks, evidence.id]
       : bookmarks.filter((id) => id !== evidence.id);

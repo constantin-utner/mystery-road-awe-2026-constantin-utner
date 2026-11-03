@@ -276,6 +276,9 @@ function handleBookmarkClick(evidenceId: string): void {
   if (!ev) return;
 
   if (bookmarks.indexOf(evidenceId) === -1) {
+    // Exercise 5 | Demo 3 | Task 1: Ausgangspunkt mit direkter Änderung.
+    // push verändert das vorhandene Array, die Zuweisung das vorhandene Objekt.
+    // Die immutable Lösung steht in EvidenceCard.tsx.
     bookmarks.push(evidenceId);
     ev.bookmarked = true;
   } else {
@@ -284,6 +287,7 @@ function handleBookmarkClick(evidenceId: string): void {
         return id !== evidenceId;
       }),
     );
+    // Exercise 5 | Demo 3 | Task 1: Auch hier wird das Objekt direkt verändert.
     ev.bookmarked = false;
   }
   saveBookmarksToStorage();
