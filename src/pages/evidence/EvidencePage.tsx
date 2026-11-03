@@ -9,12 +9,14 @@ type EvidencePageProps = {
   evidence: Evidence[];
   people: Person[];
   locations: Location[];
+  onToggleBookmark: (evidenceId: string) => void;
 };
 
 export function EvidencePage({
   evidence,
   people,
   locations,
+  onToggleBookmark,
 }: EvidencePageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -111,7 +113,10 @@ export function EvidencePage({
       />
       <div>
         <EvidenceLoadingIndicator />
-        <EvidenceGrid evidence={sortedEvidence} />
+        <EvidenceGrid
+          evidence={sortedEvidence}
+          onToggleBookmark={onToggleBookmark}
+        />
       </div>
       {previewEvidence && (
         <EvidenceDetail

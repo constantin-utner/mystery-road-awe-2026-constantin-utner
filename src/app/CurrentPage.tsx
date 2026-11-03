@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import type { PageName } from "./pageTypes";
 import type { AppData } from "../data";
@@ -16,12 +17,34 @@ type CurrentPageProps = {
 };
 
 export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
+  const [evidence, setEvidence] = useState(data.evidence);
+
+  function handleToggleBookmark(evidenceId: string) {
+    setEvidence((previousEvidence) => {
+      return previousEvidence.map((item) => {
+        if (item.id === evidenceId) {
+          return {
+            ...item,
+            bookmarked: !item.bookmarked,
+          };
+        }
+
+        return item;
+      });
+    });
+  }
+
+  const currentData = {
+    ...data,
+    evidence: evidence,
+  };
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route
         path="/dashboard"
-        element={<DashboardPage data={data} onNavigate={onNavigate} />}
+        element={<DashboardPage data={currentData} onNavigate={onNavigate} />}
       />
       <Route path="/team" element={<PeopleLocationsPage />}>
         <Route index element={<Navigate to="people" replace />} />
@@ -43,17 +66,16 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
         path="/evidence"
         element={
           <EvidencePage
-            evidence={data.evidence}
+            evidence={evidence}
             people={data.people}
             locations={data.locations}
+            onToggleBookmark={handleToggleBookmark}
           />
         }
       />
       <Route
         path="/workspace"
-        element={
-          <WorkspacePage evidence={data.evidence} people={data.people} />
-        }
+        element={<WorkspacePage evidence={evidence} people={data.people} />}
       />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
