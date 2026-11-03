@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import type { PageName } from "./pageTypes";
 import type { AppData } from "../data";
+import { saveBookmarksToStorage } from "../storage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { EvidencePage } from "../pages/evidence/EvidencePage";
 import { PeopleLocationsPage } from "../pages/people-locations/PeopleLocationsPage";
@@ -20,18 +21,24 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
   const [evidence, setEvidence] = useState(data.evidence);
 
   function handleToggleBookmark(evidenceId: string) {
-    setEvidence((previousEvidence) => {
-      return previousEvidence.map((item) => {
-        if (item.id === evidenceId) {
-          return {
-            ...item,
-            bookmarked: !item.bookmarked,
-          };
-        }
+    const nextEvidence = evidence.map((item) => {
+      if (item.id === evidenceId) {
+        return {
+          ...item,
+          bookmarked: !item.bookmarked,
+        };
+      }
 
-        return item;
-      });
+      return item;
     });
+
+    setEvidence(nextEvidence);
+
+    const bookmarkIds = nextEvidence
+      .filter((item) => item.bookmarked)
+      .map((item) => item.id);
+
+    saveBookmarksToStorage(bookmarkIds);
   }
 
   const currentData = {
