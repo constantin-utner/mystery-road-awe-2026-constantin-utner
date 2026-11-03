@@ -99,7 +99,7 @@ export function EvidenceDetail({
         </SelectField>
       </div>
 
-      <NoteEditor note={note} />
+      <NoteEditor key={evidence.id} evidenceId={evidence.id} note={note} />
     </section>
   );
 }
