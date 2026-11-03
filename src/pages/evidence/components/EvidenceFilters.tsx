@@ -11,6 +11,10 @@ type EvidenceFiltersProps = {
   onSearchChange: (value: string) => void;
   selectedType: string;
   onTypeChange: (value: string) => void;
+  selectedPerson: string;
+  onPersonChange: (value: string) => void;
+  selectedLocation: string;
+  onLocationChange: (value: string) => void;
 };
 
 export function EvidenceFilters({
@@ -21,6 +25,10 @@ export function EvidenceFilters({
   onSearchChange,
   selectedType,
   onTypeChange,
+  selectedPerson,
+  onPersonChange,
+  selectedLocation,
+  onLocationChange,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
@@ -49,7 +57,13 @@ export function EvidenceFilters({
           ))}
         </SelectField>
 
-        <SelectField name="person" label="Person" hideLabel>
+        <SelectField
+          name="person"
+          label="Person"
+          hideLabel
+          value={selectedPerson}
+          onValueChange={onPersonChange}
+        >
           <option value="">All people</option>
           {people.map((person) => (
             <option key={person.id} value={person.id}>
@@ -58,7 +72,13 @@ export function EvidenceFilters({
           ))}
         </SelectField>
 
-        <SelectField name="location" label="Location" hideLabel>
+        <SelectField
+          name="location"
+          label="Location"
+          hideLabel
+          value={selectedLocation}
+          onValueChange={onLocationChange}
+        >
           <option value="">All locations</option>
           {locations.map((location) => (
             <option key={location.id} value={location.id}>

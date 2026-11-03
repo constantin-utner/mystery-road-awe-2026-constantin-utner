@@ -18,6 +18,8 @@ export function EvidencePage({
 }: EvidencePageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [selectedPerson, setSelectedPerson] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -29,7 +31,12 @@ export function EvidencePage({
     const matchesType =
       selectedType === "" || item.type.toLowerCase() === selectedType;
 
-    return matchesSearch && matchesType;
+    const matchesPerson =
+      selectedPerson === "" || item.personIds.includes(selectedPerson);
+    const matchesLocation =
+      selectedLocation === "" || item.locationIds.includes(selectedLocation);
+
+    return matchesSearch && matchesType && matchesPerson && matchesLocation;
   });
 
   function handleSearchChange(value: string) {
@@ -49,6 +56,10 @@ export function EvidencePage({
         onSearchChange={handleSearchChange}
         selectedType={selectedType}
         onTypeChange={setSelectedType}
+        selectedPerson={selectedPerson}
+        onPersonChange={setSelectedPerson}
+        selectedLocation={selectedLocation}
+        onLocationChange={setSelectedLocation}
       />
       <div>
         <EvidenceLoadingIndicator />
