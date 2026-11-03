@@ -21,6 +21,7 @@ type EvidenceFiltersProps = {
   onRelevanceChange: (value: string) => void;
   sortOrder: string;
   onSortChange: (value: string) => void;
+  onClearFilters: () => void;
 };
 
 export function EvidenceFilters({
@@ -41,6 +42,7 @@ export function EvidenceFilters({
   onRelevanceChange,
   sortOrder,
   onSortChange,
+  onClearFilters,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
@@ -140,7 +142,7 @@ export function EvidenceFilters({
           <option value="title-desc">Title (Z–A)</option>
         </SelectField>
 
-        <Button label="Clear filters" size="normal" disabled />
+        <Button label="Clear filters" size="normal" onClick={onClearFilters} />
       </div>
     </div>
   );

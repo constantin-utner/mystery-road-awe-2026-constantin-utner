@@ -74,6 +74,16 @@ export function EvidencePage({
     setSearchTerm(value);
   }
 
+  function handleClearFilters() {
+    setSearchTerm("");
+    setSelectedType("");
+    setSelectedPerson("");
+    setSelectedLocation("");
+    setSelectedStatus("");
+    setSelectedRelevance("");
+    setSortOrder("date-desc");
+  }
+
   const previewEvidence = evidence[0];
 
   return (
@@ -97,6 +107,7 @@ export function EvidencePage({
         onRelevanceChange={setSelectedRelevance}
         sortOrder={sortOrder}
         onSortChange={setSortOrder}
+        onClearFilters={handleClearFilters}
       />
       <div>
         <EvidenceLoadingIndicator />
