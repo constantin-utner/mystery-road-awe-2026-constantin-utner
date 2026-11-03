@@ -1,4 +1,9 @@
+import { useState } from "react";
 import type { Evidence } from "../../../data";
+import {
+  loadBookmarksFromStorage,
+  saveBookmarksToStorage,
+} from "../../../storage";
 import { formatDate } from "../../../utils";
 import { StatusBadge } from "../../../components/shared/StatusBadge";
 import { BookmarkButton } from "./BookmarkButton";
@@ -9,9 +14,26 @@ type EvidenceCardProps = {
 };
 
 export function EvidenceCard({ evidence }: EvidenceCardProps) {
+  // Die Arrow Function liest den Storage nur beim Initialisieren, nicht bei jedem Rendern.
+  const [isBookmarked, setIsBookmarked] = useState(() =>
+    loadBookmarksFromStorage().includes(evidence.id),
+  );
+
+  function handleBookmarkClick() {
+    const bookmarks = loadBookmarksFromStorage();
+    const nextIsBookmarked = !isBookmarked;
+
+    const nextBookmarks = nextIsBookmarked
+      ? [...bookmarks, evidence.id]
+      : bookmarks.filter((id) => id !== evidence.id);
+
+    saveBookmarksToStorage(nextBookmarks);
+    setIsBookmarked(nextIsBookmarked);
+  }
+
   return (
     <article className="evidence-card">
-      <BookmarkButton active={evidence.bookmarked ?? false} />
+      <BookmarkButton active={isBookmarked} onToggle={handleBookmarkClick} />
       <h3>{evidence.title}</h3>
       <div className="evidence-meta">
         {evidence.id} · {evidence.type} · {formatDate(evidence.timestamp)}
