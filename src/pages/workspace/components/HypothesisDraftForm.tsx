@@ -19,6 +19,8 @@ export function HypothesisDraftForm({
   const [nature, setNature] = useState("");
   const [selectedEvidence, setSelectedEvidence] = useState<string[]>([]);
   const [confidence, setConfidence] = useState(50);
+  const [explanation, setExplanation] = useState("");
+  const [alternative, setAlternative] = useState("");
 
   return (
     <section className="hypothesis-card">
@@ -65,6 +67,8 @@ export function HypothesisDraftForm({
           <TextAreaField
             name="hypExplanation"
             label="Written explanation"
+            value={explanation}
+            onValueChange={setExplanation}
             rows={4}
             placeholder="Explain your reasoning…"
             variant="form"
@@ -75,6 +79,8 @@ export function HypothesisDraftForm({
           <TextAreaField
             name="hypAlternative"
             label="Alternative explanation"
+            value={alternative}
+            onValueChange={setAlternative}
             rows={3}
             placeholder="What else could explain the evidence?"
             variant="form"
