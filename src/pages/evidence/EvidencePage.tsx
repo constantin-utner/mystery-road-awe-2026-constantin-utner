@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Evidence, Location, Person } from "../../data";
 import { EvidenceGrid } from "./components/EvidenceGrid";
 import { EvidenceFilters } from "./components/EvidenceFilters";
@@ -15,6 +16,21 @@ export function EvidencePage({
   people,
   locations,
 }: EvidencePageProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+  const filteredEvidence = evidence.filter((item) => {
+    const searchableText = [item.title, item.summary, ...item.tags]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(normalizedSearchTerm);
+  });
+
+  function handleSearchChange(value: string) {
+    setSearchTerm(value);
+  }
+
   const previewEvidence = evidence[0];
 
   return (
@@ -24,10 +40,12 @@ export function EvidencePage({
         evidence={evidence}
         people={people}
         locations={locations}
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
       />
       <div>
         <EvidenceLoadingIndicator />
-        <EvidenceGrid evidence={evidence} />
+        <EvidenceGrid evidence={filteredEvidence} />
       </div>
       {previewEvidence && (
         <EvidenceDetail

@@ -6,12 +6,16 @@ type EvidenceFiltersProps = {
   evidence: Evidence[];
   people: Person[];
   locations: Location[];
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
 };
 
 export function EvidenceFilters({
   evidence,
   people,
   locations,
+  searchTerm,
+  onSearchChange,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
@@ -23,7 +27,7 @@ export function EvidenceFilters({
   return (
     <div className="toolbar">
       <div className="toolbar-row">
-        <SearchField />
+        <SearchField value={searchTerm} onValueChange={onSearchChange} />
 
         <SelectField name="type" label="Type" hideLabel>
           <option value="">All types</option>
