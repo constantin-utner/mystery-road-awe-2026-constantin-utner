@@ -1,5 +1,9 @@
 import { useState } from "react";
 import type { Evidence, Person } from "../../../data";
+import {
+  loadHypothesisFromStorage,
+  saveHypothesisToStorage,
+} from "../../../storage";
 import { SelectField } from "../../../components/shared/SelectField";
 import { TextAreaField } from "../../../components/shared/TextAreaField";
 import { Button } from "../../../components/shared/Button";
@@ -15,12 +19,30 @@ export function HypothesisDraftForm({
   people,
   evidence,
 }: HypothesisDraftFormProps) {
-  const [suspect, setSuspect] = useState("");
-  const [nature, setNature] = useState("");
-  const [selectedEvidence, setSelectedEvidence] = useState<string[]>([]);
-  const [confidence, setConfidence] = useState(50);
-  const [explanation, setExplanation] = useState("");
-  const [alternative, setAlternative] = useState("");
+  // Lazy Initialization: Funktion übergeben statt direkt aufrufen mit loadHypothesisFromStorage(), damit nur
+  // zur Initialisierung geladen wird. Gleichwertig: useState(() => loadHypothesisFromStorage()).
+  const [savedDraft] = useState(loadHypothesisFromStorage);
+  const [suspect, setSuspect] = useState(savedDraft?.suspectId ?? "");
+  const [nature, setNature] = useState(savedDraft?.nature ?? "");
+  const [selectedEvidence, setSelectedEvidence] = useState<string[]>(
+    savedDraft?.evidenceIds ?? [],
+  );
+  const [confidence, setConfidence] = useState(
+    Number(savedDraft?.confidence ?? 50),
+  );
+  const [explanation, setExplanation] = useState(savedDraft?.explanation ?? "");
+  const [alternative, setAlternative] = useState(savedDraft?.alternative ?? "");
+
+  function handleSaveDraft() {
+    saveHypothesisToStorage({
+      suspectId: suspect,
+      nature: nature,
+      evidenceIds: selectedEvidence,
+      confidence: String(confidence),
+      explanation: explanation,
+      alternative: alternative,
+    });
+  }
 
   return (
     <section className="hypothesis-card">
@@ -92,7 +114,7 @@ export function HypothesisDraftForm({
             label="Save hypothesis draft"
             variant="primary"
             size="normal"
-            disabled
+            onClick={handleSaveDraft}
           />
           <span className="saved-msg hidden" role="status">
             Saved
