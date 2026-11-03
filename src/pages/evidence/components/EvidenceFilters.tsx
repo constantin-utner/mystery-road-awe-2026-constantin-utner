@@ -15,6 +15,10 @@ type EvidenceFiltersProps = {
   onPersonChange: (value: string) => void;
   selectedLocation: string;
   onLocationChange: (value: string) => void;
+  selectedStatus: string;
+  onStatusChange: (value: string) => void;
+  selectedRelevance: string;
+  onRelevanceChange: (value: string) => void;
 };
 
 export function EvidenceFilters({
@@ -29,6 +33,10 @@ export function EvidenceFilters({
   onPersonChange,
   selectedLocation,
   onLocationChange,
+  selectedStatus,
+  onStatusChange,
+  selectedRelevance,
+  onRelevanceChange,
 }: EvidenceFiltersProps) {
   const types: string[] = [];
 
@@ -89,14 +97,26 @@ export function EvidenceFilters({
       </div>
 
       <div className="toolbar-row">
-        <SelectField name="status" label="Status" hideLabel>
+        <SelectField
+          name="status"
+          label="Status"
+          hideLabel
+          value={selectedStatus}
+          onValueChange={onStatusChange}
+        >
           <option value="">All statuses</option>
           <option value="unreviewed">Unreviewed</option>
           <option value="reviewed">Reviewed</option>
           <option value="flagged">Flagged</option>
         </SelectField>
 
-        <SelectField name="relevance" label="Relevance" hideLabel>
+        <SelectField
+          name="relevance"
+          label="Relevance"
+          hideLabel
+          value={selectedRelevance}
+          onValueChange={onRelevanceChange}
+        >
           <option value="">All relevance</option>
           <option value="unknown">Unknown</option>
           <option value="relevant">Relevant</option>

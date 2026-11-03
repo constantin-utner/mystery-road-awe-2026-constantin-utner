@@ -20,6 +20,8 @@ export function EvidencePage({
   const [selectedType, setSelectedType] = useState("");
   const [selectedPerson, setSelectedPerson] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedRelevance, setSelectedRelevance] = useState("");
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -36,7 +38,19 @@ export function EvidencePage({
     const matchesLocation =
       selectedLocation === "" || item.locationIds.includes(selectedLocation);
 
-    return matchesSearch && matchesType && matchesPerson && matchesLocation;
+    const matchesStatus =
+      selectedStatus === "" || item.status === selectedStatus;
+    const matchesRelevance =
+      selectedRelevance === "" || item.relevance === selectedRelevance;
+
+    return (
+      matchesSearch &&
+      matchesType &&
+      matchesPerson &&
+      matchesLocation &&
+      matchesStatus &&
+      matchesRelevance
+    );
   });
 
   function handleSearchChange(value: string) {
@@ -60,6 +74,10 @@ export function EvidencePage({
         onPersonChange={setSelectedPerson}
         selectedLocation={selectedLocation}
         onLocationChange={setSelectedLocation}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+        selectedRelevance={selectedRelevance}
+        onRelevanceChange={setSelectedRelevance}
       />
       <div>
         <EvidenceLoadingIndicator />
