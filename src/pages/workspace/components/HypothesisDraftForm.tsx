@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Evidence, Person } from "../../../data";
 import { SelectField } from "../../../components/shared/SelectField";
 import { TextAreaField } from "../../../components/shared/TextAreaField";
@@ -14,6 +15,9 @@ export function HypothesisDraftForm({
   people,
   evidence,
 }: HypothesisDraftFormProps) {
+  const [suspect, setSuspect] = useState("");
+  const [nature, setNature] = useState("");
+
   return (
     <section className="hypothesis-card">
       <h3>Hypothesis Draft</h3>
@@ -22,7 +26,8 @@ export function HypothesisDraftForm({
           <SelectField
             name="hypSuspect"
             label="Suspected responsible person"
-            defaultValue=""
+            value={suspect}
+            onValueChange={setSuspect}
           >
             <option value="">Select a person…</option>
             {people.map((person) => (
@@ -37,7 +42,8 @@ export function HypothesisDraftForm({
           <SelectField
             name="hypNature"
             label="Accidental or deliberate incident"
-            defaultValue=""
+            value={nature}
+            onValueChange={setNature}
           >
             <option value="">Select…</option>
             <option value="accidental">Accidental</option>
