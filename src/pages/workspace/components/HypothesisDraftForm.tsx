@@ -17,6 +17,8 @@ export function HypothesisDraftForm({
 }: HypothesisDraftFormProps) {
   const [suspect, setSuspect] = useState("");
   const [nature, setNature] = useState("");
+  const [selectedEvidence, setSelectedEvidence] = useState<string[]>([]);
+  const [confidence, setConfidence] = useState(50);
 
   return (
     <section className="hypothesis-card">
@@ -52,8 +54,12 @@ export function HypothesisDraftForm({
           </SelectField>
         </div>
 
-        <EvidenceMultiSelect evidence={evidence} />
-        <ConfidenceSlider />
+        <EvidenceMultiSelect
+          evidence={evidence}
+          value={selectedEvidence}
+          onValueChange={setSelectedEvidence}
+        />
+        <ConfidenceSlider value={confidence} onValueChange={setConfidence} />
 
         <div className="form-row">
           <TextAreaField
