@@ -13,6 +13,16 @@ type EvidencePageProps = {
   onStatusChange: (evidenceId: string, status: string) => void;
 };
 
+const initialFilterState = {
+  searchTerm: "",
+  selectedType: "",
+  selectedPerson: "",
+  selectedLocation: "",
+  selectedStatus: "",
+  selectedRelevance: "",
+  sortOrder: "date-desc",
+};
+
 export function EvidencePage({
   evidence,
   people,
@@ -20,13 +30,21 @@ export function EvidencePage({
   onToggleBookmark,
   onStatusChange,
 }: EvidencePageProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedPerson, setSelectedPerson] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedRelevance, setSelectedRelevance] = useState("");
-  const [sortOrder, setSortOrder] = useState("date-desc");
+  const [searchTerm, setSearchTerm] = useState(initialFilterState.searchTerm);
+  const [selectedType, setSelectedType] = useState(initialFilterState.selectedType);
+  const [selectedPerson, setSelectedPerson] = useState(
+    initialFilterState.selectedPerson,
+  );
+  const [selectedLocation, setSelectedLocation] = useState(
+    initialFilterState.selectedLocation,
+  );
+  const [selectedStatus, setSelectedStatus] = useState(
+    initialFilterState.selectedStatus,
+  );
+  const [selectedRelevance, setSelectedRelevance] = useState(
+    initialFilterState.selectedRelevance,
+  );
+  const [sortOrder, setSortOrder] = useState(initialFilterState.sortOrder);
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -79,13 +97,13 @@ export function EvidencePage({
   }
 
   function handleClearFilters() {
-    setSearchTerm("");
-    setSelectedType("");
-    setSelectedPerson("");
-    setSelectedLocation("");
-    setSelectedStatus("");
-    setSelectedRelevance("");
-    setSortOrder("date-desc");
+    setSearchTerm(initialFilterState.searchTerm);
+    setSelectedType(initialFilterState.selectedType);
+    setSelectedPerson(initialFilterState.selectedPerson);
+    setSelectedLocation(initialFilterState.selectedLocation);
+    setSelectedStatus(initialFilterState.selectedStatus);
+    setSelectedRelevance(initialFilterState.selectedRelevance);
+    setSortOrder(initialFilterState.sortOrder);
   }
 
   const previewEvidence = evidence[0];
