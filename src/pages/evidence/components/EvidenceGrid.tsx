@@ -3,23 +3,15 @@ import { EvidenceCard } from "./EvidenceCard";
 
 type EvidenceGridProps = {
   evidence: Evidence[];
-  onToggleBookmark: (evidenceId: string) => void;
 };
 
-export function EvidenceGrid({
-  evidence,
-  onToggleBookmark,
-}: EvidenceGridProps) {
+export function EvidenceGrid({ evidence }: EvidenceGridProps) {
   return (
     <div className="evidence-grid">
       {evidence.length === 0 && <p>No evidence matches the current filters.</p>}
 
       {evidence.map((item) => (
-        <EvidenceCard
-          key={item.id}
-          evidence={item}
-          onToggleBookmark={onToggleBookmark}
-        />
+        <EvidenceCard key={item.id} evidence={item} />
       ))}
     </div>
   );

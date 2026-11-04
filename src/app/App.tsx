@@ -4,6 +4,7 @@ import type { AppData } from "../data";
 import { AppHeader } from "../components/layout/AppHeader";
 import { AppFooter } from "../components/layout/AppFooter";
 import { CurrentPage } from "./CurrentPage";
+import { BookmarkProvider } from "../context/BookmarkContext";
 
 type AppProps = {
   data: AppData;
@@ -21,7 +22,9 @@ export function App({ data }: AppProps) {
     <>
       <AppHeader />
       <main className="app-main">
-        <CurrentPage data={data} onNavigate={navigateTo} />
+        <BookmarkProvider>
+          <CurrentPage data={data} onNavigate={navigateTo} />
+        </BookmarkProvider>
       </main>
       <AppFooter />
     </>

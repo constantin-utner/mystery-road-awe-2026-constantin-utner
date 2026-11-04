@@ -1,4 +1,4 @@
-import { loadBookmarksFromStorage, loadEvidenceReviews } from "./storage";
+import { loadEvidenceReviews } from "./storage";
 
 export type CaseData = {
   caseId: string;
@@ -42,7 +42,6 @@ export type Evidence = {
   tags: string[];
   status: string;
   relevance: string;
-  bookmarked?: boolean;
 };
 
 export type TimelineEvent = {
@@ -90,7 +89,6 @@ async function loadEvidenceData(): Promise<Evidence[]> {
   const response = await fetch("data/evidence.json");
   const evidence: Evidence[] = await response.json();
   const reviews = loadEvidenceReviews();
-  const bookmarks = loadBookmarksFromStorage();
 
   return evidence.map((item): Evidence => {
     const review = reviews[item.id];
@@ -107,7 +105,6 @@ async function loadEvidenceData(): Promise<Evidence[]> {
       relevance: ["unknown", "relevant", "irrelevant"].includes(relevance)
         ? relevance
         : "unknown",
-      bookmarked: bookmarks.includes(item.id),
     };
   });
 }

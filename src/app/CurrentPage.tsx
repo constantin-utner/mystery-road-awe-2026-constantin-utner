@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import type { PageName } from "./pageTypes";
 import type { AppData } from "../data";
-import { saveBookmarksToStorage, saveEvidenceReview } from "../storage";
+import { saveEvidenceReview } from "../storage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { EvidencePage } from "../pages/evidence/EvidencePage";
 import { PeopleLocationsPage } from "../pages/people-locations/PeopleLocationsPage";
@@ -19,27 +19,6 @@ type CurrentPageProps = {
 
 export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
   const [evidence, setEvidence] = useState(data.evidence);
-
-  function handleToggleBookmark(evidenceId: string) {
-    const nextEvidence = evidence.map((item) => {
-      if (item.id === evidenceId) {
-        return {
-          ...item,
-          bookmarked: !item.bookmarked,
-        };
-      }
-
-      return item;
-    });
-
-    setEvidence(nextEvidence);
-
-    const bookmarkIds = nextEvidence
-      .filter((item) => item.bookmarked)
-      .map((item) => item.id);
-
-    saveBookmarksToStorage(bookmarkIds);
-  }
 
   function handleStatusChange(evidenceId: string, status: string) {
     const nextEvidence = evidence.map((item) => {
@@ -101,7 +80,6 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
             evidence={evidence}
             people={data.people}
             locations={data.locations}
-            onToggleBookmark={handleToggleBookmark}
             onStatusChange={handleStatusChange}
           />
         }

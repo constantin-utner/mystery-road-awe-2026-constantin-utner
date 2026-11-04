@@ -6,6 +6,7 @@ import { StatsSection } from "./components/StatsSection";
 import { ReviewProgress } from "./components/ReviewProgress";
 import { RecentEvidence } from "./components/RecentEvidence";
 import { RecentTimeline } from "./components/RecentTimeline";
+import { useBookmarks } from "../../context/BookmarkContext";
 
 type DashboardPageProps = {
   data: AppData;
@@ -13,12 +14,14 @@ type DashboardPageProps = {
 };
 
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
+  const { bookmarkIds } = useBookmarks();
+
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(
     (item) => item.status.toLowerCase() === "reviewed",
   ).length;
-  const bookmarkedCount = data.evidence.filter(
-    (item) => item.bookmarked,
+  const bookmarkedCount = data.evidence.filter((item) =>
+    bookmarkIds.includes(item.id),
   ).length;
 
   return (

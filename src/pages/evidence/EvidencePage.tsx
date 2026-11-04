@@ -9,7 +9,6 @@ type EvidencePageProps = {
   evidence: Evidence[];
   people: Person[];
   locations: Location[];
-  onToggleBookmark: (evidenceId: string) => void;
   onStatusChange: (evidenceId: string, status: string) => void;
 };
 
@@ -62,7 +61,6 @@ export function EvidencePage({
   evidence,
   people,
   locations,
-  onToggleBookmark,
   onStatusChange,
 }: EvidencePageProps) {
   const [filterState, dispatch] = useReducer(
@@ -172,10 +170,7 @@ export function EvidencePage({
       />
       <div>
         <EvidenceLoadingIndicator />
-        <EvidenceGrid
-          evidence={sortedEvidence}
-          onToggleBookmark={onToggleBookmark}
-        />
+        <EvidenceGrid evidence={sortedEvidence} />
       </div>
       {previewEvidence && (
         <EvidenceDetail

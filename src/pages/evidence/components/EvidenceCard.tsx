@@ -3,24 +3,23 @@ import { formatDate } from "../../../utils";
 import { StatusBadge } from "../../../components/shared/StatusBadge";
 import { BookmarkButton } from "./BookmarkButton";
 import { TagBadge } from "./TagBadge";
+import { useBookmarks } from "../../../context/BookmarkContext";
 
 type EvidenceCardProps = {
   evidence: Evidence;
-  onToggleBookmark: (evidenceId: string) => void;
 };
 
-export function EvidenceCard({
-  evidence,
-  onToggleBookmark,
-}: EvidenceCardProps) {
+export function EvidenceCard({ evidence }: EvidenceCardProps) {
+  const { bookmarkIds, toggleBookmark } = useBookmarks();
+
   function handleBookmarkClick() {
-    onToggleBookmark(evidence.id);
+    toggleBookmark(evidence.id);
   }
 
   return (
     <article className="evidence-card">
       <BookmarkButton
-        active={evidence.bookmarked ?? false}
+        active={bookmarkIds.includes(evidence.id)}
         onToggle={handleBookmarkClick}
       />
       <h3>{evidence.title}</h3>

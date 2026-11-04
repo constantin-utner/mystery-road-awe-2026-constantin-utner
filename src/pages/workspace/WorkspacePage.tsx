@@ -3,6 +3,7 @@ import { loadNotesFromStorage } from "../../storage";
 import { BookmarkedEvidenceSection } from "./components/BookmarkedEvidenceSection";
 import { PersonalNotesSection } from "./components/PersonalNotesSection";
 import { HypothesisDraftForm } from "./components/HypothesisDraftForm";
+import { useBookmarks } from "../../context/BookmarkContext";
 
 type WorkspacePageProps = {
   evidence: Evidence[];
@@ -10,7 +11,10 @@ type WorkspacePageProps = {
 };
 
 export function WorkspacePage({ evidence, people }: WorkspacePageProps) {
-  const bookmarkedEvidence = evidence.filter((item) => item.bookmarked);
+  const { bookmarkIds } = useBookmarks();
+  const bookmarkedEvidence = evidence.filter((item) =>
+    bookmarkIds.includes(item.id),
+  );
   const notes = loadNotesFromStorage();
   const evidenceWithNotes = evidence.filter((item) => notes[item.id]);
 
