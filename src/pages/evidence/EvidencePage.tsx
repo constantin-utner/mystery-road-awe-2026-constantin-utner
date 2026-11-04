@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import type { Evidence, Location, Person } from "../../data";
 import { EvidenceGrid } from "./components/EvidenceGrid";
 import { EvidenceFilters } from "./components/EvidenceFilters";
@@ -23,6 +23,32 @@ const initialFilterState = {
   sortOrder: "date-desc",
 };
 
+type FilterState = typeof initialFilterState;
+
+type FilterAction =
+  | {
+      type: "SET_FILTER";
+      field: keyof FilterState;
+      value: string;
+    }
+  | {
+      type: "CLEAR_FILTERS";
+    };
+
+function filterReducer(state: FilterState, action: FilterAction): FilterState {
+  switch (action.type) {
+    case "SET_FILTER":
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    case "CLEAR_FILTERS":
+      return initialFilterState;
+    default:
+      return state;
+  }
+}
+
 export function EvidencePage({
   evidence,
   people,
@@ -30,21 +56,19 @@ export function EvidencePage({
   onToggleBookmark,
   onStatusChange,
 }: EvidencePageProps) {
-  const [searchTerm, setSearchTerm] = useState(initialFilterState.searchTerm);
-  const [selectedType, setSelectedType] = useState(initialFilterState.selectedType);
-  const [selectedPerson, setSelectedPerson] = useState(
-    initialFilterState.selectedPerson,
+  const [filterState, dispatch] = useReducer(
+    filterReducer,
+    initialFilterState,
   );
-  const [selectedLocation, setSelectedLocation] = useState(
-    initialFilterState.selectedLocation,
-  );
-  const [selectedStatus, setSelectedStatus] = useState(
-    initialFilterState.selectedStatus,
-  );
-  const [selectedRelevance, setSelectedRelevance] = useState(
-    initialFilterState.selectedRelevance,
-  );
-  const [sortOrder, setSortOrder] = useState(initialFilterState.sortOrder);
+  const {
+    searchTerm,
+    selectedType,
+    selectedPerson,
+    selectedLocation,
+    selectedStatus,
+    selectedRelevance,
+    sortOrder,
+  } = filterState;
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredEvidence = evidence.filter((item) => {
@@ -93,17 +117,11 @@ export function EvidencePage({
   });
 
   function handleSearchChange(value: string) {
-    setSearchTerm(value);
+    dispatch({ type: "SET_FILTER", field: "searchTerm", value });
   }
 
   function handleClearFilters() {
-    setSearchTerm(initialFilterState.searchTerm);
-    setSelectedType(initialFilterState.selectedType);
-    setSelectedPerson(initialFilterState.selectedPerson);
-    setSelectedLocation(initialFilterState.selectedLocation);
-    setSelectedStatus(initialFilterState.selectedStatus);
-    setSelectedRelevance(initialFilterState.selectedRelevance);
-    setSortOrder(initialFilterState.sortOrder);
+    dispatch({ type: "CLEAR_FILTERS" });
   }
 
   const previewEvidence = evidence[0];
@@ -118,17 +136,29 @@ export function EvidencePage({
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         selectedType={selectedType}
-        onTypeChange={setSelectedType}
+        onTypeChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "selectedType", value })
+        }
         selectedPerson={selectedPerson}
-        onPersonChange={setSelectedPerson}
+        onPersonChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "selectedPerson", value })
+        }
         selectedLocation={selectedLocation}
-        onLocationChange={setSelectedLocation}
+        onLocationChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "selectedLocation", value })
+        }
         selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
+        onStatusChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "selectedStatus", value })
+        }
         selectedRelevance={selectedRelevance}
-        onRelevanceChange={setSelectedRelevance}
+        onRelevanceChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "selectedRelevance", value })
+        }
         sortOrder={sortOrder}
-        onSortChange={setSortOrder}
+        onSortChange={(value) =>
+          dispatch({ type: "SET_FILTER", field: "sortOrder", value })
+        }
         onClearFilters={handleClearFilters}
       />
       <div>
