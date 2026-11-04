@@ -10,6 +10,7 @@ type EvidencePageProps = {
   people: Person[];
   locations: Location[];
   onStatusChange: (evidenceId: string, status: string) => void;
+  onRelevanceChange: (evidenceId: string, relevance: string) => void;
 };
 
 const initialFilterState = {
@@ -62,6 +63,7 @@ export function EvidencePage({
   people,
   locations,
   onStatusChange,
+  onRelevanceChange,
 }: EvidencePageProps) {
   const [filterState, dispatch] = useReducer(
     filterReducer,
@@ -178,6 +180,7 @@ export function EvidencePage({
           people={people}
           locations={locations}
           onStatusChange={onStatusChange}
+          onRelevanceChange={onRelevanceChange}
         />
       )}
     </section>

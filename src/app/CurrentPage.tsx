@@ -45,6 +45,31 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
     }
   }
 
+  function handleRelevanceChange(evidenceId: string, relevance: string) {
+    const nextEvidence = evidence.map((item) => {
+      if (item.id === evidenceId) {
+        return {
+          ...item,
+          relevance: relevance,
+        };
+      }
+
+      return item;
+    });
+
+    setEvidence(nextEvidence);
+
+    const updatedEvidence = nextEvidence.find((item) => item.id === evidenceId);
+
+    if (updatedEvidence) {
+      saveEvidenceReview(
+        updatedEvidence.id,
+        updatedEvidence.status,
+        updatedEvidence.relevance,
+      );
+    }
+  }
+
   const currentData = {
     ...data,
     evidence: evidence,
@@ -81,6 +106,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
             people={data.people}
             locations={data.locations}
             onStatusChange={handleStatusChange}
+            onRelevanceChange={handleRelevanceChange}
           />
         }
       />

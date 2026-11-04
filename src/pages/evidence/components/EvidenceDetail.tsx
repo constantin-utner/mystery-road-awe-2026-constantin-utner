@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Evidence, Location, Person } from "../../../data";
 import { SelectField } from "../../../components/shared/SelectField";
 import { loadNoteForEvidence } from "../../../storage";
@@ -12,6 +11,7 @@ type EvidenceDetailProps = {
   people: Person[];
   locations: Location[];
   onStatusChange: (evidenceId: string, status: string) => void;
+  onRelevanceChange: (evidenceId: string, relevance: string) => void;
 };
 
 export function EvidenceDetail({
@@ -19,12 +19,16 @@ export function EvidenceDetail({
   people,
   locations,
   onStatusChange,
+  onRelevanceChange,
 }: EvidenceDetailProps) {
-  const [relevance, setRelevance] = useState<string>(evidence.relevance);
   const note = loadNoteForEvidence(evidence.id);
 
   function handleStatusChange(value: string) {
     onStatusChange(evidence.id, value);
+  }
+
+  function handleRelevanceChange(value: string) {
+    onRelevanceChange(evidence.id, value);
   }
 
   const relatedPeople = evidence.personIds.map((id) => {
@@ -99,8 +103,8 @@ export function EvidenceDetail({
         <SelectField
           name="detailRelevance"
           label="Relevance"
-          value={relevance}
-          onValueChange={setRelevance}
+          value={evidence.relevance}
+          onValueChange={handleRelevanceChange}
           hideLabel
         >
           <option value="unknown">Unknown</option>
