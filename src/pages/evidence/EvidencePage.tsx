@@ -10,6 +10,7 @@ type EvidencePageProps = {
   people: Person[];
   locations: Location[];
   onToggleBookmark: (evidenceId: string) => void;
+  onStatusChange: (evidenceId: string, status: string) => void;
 };
 
 export function EvidencePage({
@@ -17,6 +18,7 @@ export function EvidencePage({
   people,
   locations,
   onToggleBookmark,
+  onStatusChange,
 }: EvidencePageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -123,6 +125,7 @@ export function EvidencePage({
           evidence={previewEvidence}
           people={people}
           locations={locations}
+          onStatusChange={onStatusChange}
         />
       )}
     </section>

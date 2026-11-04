@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import type { PageName } from "./pageTypes";
 import type { AppData } from "../data";
-import { saveBookmarksToStorage } from "../storage";
+import { saveBookmarksToStorage, saveEvidenceReview } from "../storage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { EvidencePage } from "../pages/evidence/EvidencePage";
 import { PeopleLocationsPage } from "../pages/people-locations/PeopleLocationsPage";
@@ -41,6 +41,31 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
     saveBookmarksToStorage(bookmarkIds);
   }
 
+  function handleStatusChange(evidenceId: string, status: string) {
+    const nextEvidence = evidence.map((item) => {
+      if (item.id === evidenceId) {
+        return {
+          ...item,
+          status: status,
+        };
+      }
+
+      return item;
+    });
+
+    setEvidence(nextEvidence);
+
+    const updatedEvidence = nextEvidence.find((item) => item.id === evidenceId);
+
+    if (updatedEvidence) {
+      saveEvidenceReview(
+        updatedEvidence.id,
+        updatedEvidence.status,
+        updatedEvidence.relevance,
+      );
+    }
+  }
+
   const currentData = {
     ...data,
     evidence: evidence,
@@ -77,6 +102,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
             people={data.people}
             locations={data.locations}
             onToggleBookmark={handleToggleBookmark}
+            onStatusChange={handleStatusChange}
           />
         }
       />

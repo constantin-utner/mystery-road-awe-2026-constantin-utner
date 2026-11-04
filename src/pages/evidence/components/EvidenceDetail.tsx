@@ -11,16 +11,21 @@ type EvidenceDetailProps = {
   evidence: Evidence;
   people: Person[];
   locations: Location[];
+  onStatusChange: (evidenceId: string, status: string) => void;
 };
 
 export function EvidenceDetail({
   evidence,
   people,
   locations,
+  onStatusChange,
 }: EvidenceDetailProps) {
-  const [status, setStatus] = useState<string>(evidence.status);
   const [relevance, setRelevance] = useState<string>(evidence.relevance);
   const note = loadNoteForEvidence(evidence.id);
+
+  function handleStatusChange(value: string) {
+    onStatusChange(evidence.id, value);
+  }
 
   const relatedPeople = evidence.personIds.map((id) => {
     const person = findPersonById(id, people);
@@ -79,8 +84,8 @@ export function EvidenceDetail({
         <SelectField
           name="detailStatus"
           label="Review status"
-          value={status}
-          onValueChange={setStatus}
+          value={evidence.status}
+          onValueChange={handleStatusChange}
           hideLabel
         >
           <option value="unreviewed">Unreviewed</option>
