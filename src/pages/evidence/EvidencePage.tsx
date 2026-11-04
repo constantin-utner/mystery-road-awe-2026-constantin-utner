@@ -28,7 +28,11 @@ type FilterState = typeof initialFilterState;
 type FilterAction =
   | {
       type: "SET_FILTER";
-      field: keyof FilterState;
+      field: Exclude<keyof FilterState, "sortOrder">;
+      value: string;
+    }
+  | {
+      type: "SET_SORT";
       value: string;
     }
   | {
@@ -41,6 +45,11 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
       return {
         ...state,
         [action.field]: action.value,
+      };
+    case "SET_SORT":
+      return {
+        ...state,
+        sortOrder: action.value,
       };
     case "CLEAR_FILTERS":
       return initialFilterState;
@@ -157,7 +166,7 @@ export function EvidencePage({
         }
         sortOrder={sortOrder}
         onSortChange={(value) =>
-          dispatch({ type: "SET_FILTER", field: "sortOrder", value })
+          dispatch({ type: "SET_SORT", value })
         }
         onClearFilters={handleClearFilters}
       />
