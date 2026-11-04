@@ -19,28 +19,24 @@ export function HypothesisDraftForm({
   people,
   evidence,
 }: HypothesisDraftFormProps) {
-  // Lazy Initialization: Funktion übergeben statt direkt aufrufen mit loadHypothesisFromStorage(), damit nur
-  // zur Initialisierung geladen wird. Gleichwertig: useState(() => loadHypothesisFromStorage()).
-  const [savedDraft] = useState(loadHypothesisFromStorage);
-  const [suspect, setSuspect] = useState(savedDraft?.suspectId ?? "");
-  const [nature, setNature] = useState(savedDraft?.nature ?? "");
-  const [selectedEvidence, setSelectedEvidence] = useState<string[]>(
-    savedDraft?.evidenceIds ?? [],
-  );
-  const [confidence, setConfidence] = useState(
-    Number(savedDraft?.confidence ?? 50),
-  );
-  const [explanation, setExplanation] = useState(savedDraft?.explanation ?? "");
-  const [alternative, setAlternative] = useState(savedDraft?.alternative ?? "");
+  // Lazy Initialization: Der gespeicherte Entwurf wird zur Initialisierung geladen.
+  const [draft, setDraft] = useState(() => {
+    const savedDraft = loadHypothesisFromStorage();
+
+    return {
+      suspectId: savedDraft?.suspectId ?? "",
+      nature: savedDraft?.nature ?? "",
+      evidenceIds: savedDraft?.evidenceIds ?? [],
+      confidence: Number(savedDraft?.confidence ?? 50),
+      explanation: savedDraft?.explanation ?? "",
+      alternative: savedDraft?.alternative ?? "",
+    };
+  });
 
   function handleSaveDraft() {
     saveHypothesisToStorage({
-      suspectId: suspect,
-      nature: nature,
-      evidenceIds: selectedEvidence,
-      confidence: String(confidence),
-      explanation: explanation,
-      alternative: alternative,
+      ...draft,
+      confidence: String(draft.confidence), // Convert confidence to string for storage
     });
   }
 
@@ -52,8 +48,13 @@ export function HypothesisDraftForm({
           <SelectField
             name="hypSuspect"
             label="Suspected responsible person"
-            value={suspect}
-            onValueChange={setSuspect}
+            value={draft.suspectId}
+            onValueChange={(value) =>
+              setDraft((currentDraft) => ({
+                ...currentDraft,
+                suspectId: value,
+              }))
+            }
           >
             <option value="">Select a person…</option>
             {people.map((person) => (
@@ -68,8 +69,10 @@ export function HypothesisDraftForm({
           <SelectField
             name="hypNature"
             label="Accidental or deliberate incident"
-            value={nature}
-            onValueChange={setNature}
+            value={draft.nature}
+            onValueChange={(value) =>
+              setDraft((currentDraft) => ({ ...currentDraft, nature: value }))
+            }
           >
             <option value="">Select…</option>
             <option value="accidental">Accidental</option>
@@ -80,17 +83,32 @@ export function HypothesisDraftForm({
 
         <EvidenceMultiSelect
           evidence={evidence}
-          value={selectedEvidence}
-          onValueChange={setSelectedEvidence}
+          value={draft.evidenceIds}
+          onValueChange={(value) =>
+            setDraft((currentDraft) => ({
+              ...currentDraft,
+              evidenceIds: value,
+            }))
+          }
         />
-        <ConfidenceSlider value={confidence} onValueChange={setConfidence} />
+        <ConfidenceSlider
+          value={draft.confidence}
+          onValueChange={(value) =>
+            setDraft((currentDraft) => ({ ...currentDraft, confidence: value }))
+          }
+        />
 
         <div className="form-row">
           <TextAreaField
             name="hypExplanation"
             label="Written explanation"
-            value={explanation}
-            onValueChange={setExplanation}
+            value={draft.explanation}
+            onValueChange={(value) =>
+              setDraft((currentDraft) => ({
+                ...currentDraft,
+                explanation: value,
+              }))
+            }
             rows={4}
             placeholder="Explain your reasoning…"
             variant="form"
@@ -101,8 +119,13 @@ export function HypothesisDraftForm({
           <TextAreaField
             name="hypAlternative"
             label="Alternative explanation"
-            value={alternative}
-            onValueChange={setAlternative}
+            value={draft.alternative}
+            onValueChange={(value) =>
+              setDraft((currentDraft) => ({
+                ...currentDraft,
+                alternative: value,
+              }))
+            }
             rows={3}
             placeholder="What else could explain the evidence?"
             variant="form"
