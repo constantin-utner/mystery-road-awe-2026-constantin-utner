@@ -16,16 +16,11 @@ export function WorkspacePage({ evidence, people }: WorkspacePageProps) {
   const [delay, setDelay] = useState(1000);
 
   useEffect(() => {
-    console.log(`[Workspace] Start (${delay} ms)`);
+    console.log(`Start (${delay} ms)`);
 
-    const intervalId = window.setInterval(() => {
-      console.log(`[Workspace] Tick (${delay} ms)`);
+    window.setInterval(() => {
+      console.log(`Tick (${delay} ms)`);
     }, delay);
-
-    return () => {
-      window.clearInterval(intervalId);
-      console.log(`[Workspace] Cleanup (${delay} ms)`);
-    };
   }, [delay]);
 
   const bookmarkedEvidence = evidence.filter((item) =>
