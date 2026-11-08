@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { AppData } from "../../data";
 import { CaseSummaryCard } from "./components/CaseSummaryCard";
 import { HowToUsePortal } from "./components/HowToUsePortal";
@@ -16,20 +15,6 @@ type DashboardPageProps = {
 
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
-  const [count, setCount] = useState(0);
-  const [otherCount, setOtherCount] = useState(0);
-
-  useEffect(() => {
-    console.log("Effect mit []");
-  }, []);
-
-  useEffect(() => {
-    console.log("Effect ohne Array");
-  });
-
-  useEffect(() => {
-    console.log("Effect mit [count]", count);
-  }, [count]);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(
@@ -42,12 +27,6 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   return (
     <section>
       <h2>Case Dashboard</h2>
-      <button type="button" onClick={() => setCount(count + 1)}>
-        Klicks: {count}
-      </button>
-      <button type="button" onClick={() => setOtherCount(otherCount + 1)}>
-        Andere Klicks: {otherCount}
-      </button>
       <HowToUsePortal onNavigate={onNavigate} />
       <CaseSummaryCard caseData={data.caseData} />
       <StatsSection
