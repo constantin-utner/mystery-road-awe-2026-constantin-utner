@@ -1,4 +1,5 @@
-import type { AppData } from "../../data";
+import { useEffect, useState } from "react";
+import type { CaseData, SharedData } from "../../data";
 import { CaseSummaryCard } from "./components/CaseSummaryCard";
 import { HowToUsePortal } from "./components/HowToUsePortal";
 import type { PageName } from "../../app/pageTypes";
@@ -9,12 +10,34 @@ import { RecentTimeline } from "./components/RecentTimeline";
 import { useBookmarks } from "../../context/BookmarkContext";
 
 type DashboardPageProps = {
-  data: AppData;
+  data: SharedData;
   onNavigate: (page: PageName) => void;
 };
 
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
+
+  const [caseData, setCaseData] = useState<CaseData | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadCase() {
+      try {
+        const response = await fetch(`${import.meta.env.BASE_URL}api/case`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result: CaseData = await response.json();
+        setCaseData(result);
+      } catch {
+        setError("Die Fallübersicht konnte nicht geladen werden.");
+      }
+    }
+
+    loadCase();
+  }, []);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(
@@ -28,7 +51,9 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
     <section>
       <h2>Case Dashboard</h2>
       <HowToUsePortal onNavigate={onNavigate} />
-      <CaseSummaryCard caseData={data.caseData} />
+      {error && <p role="alert">{error}</p>}
+      {!error && caseData === null && <p>Fallübersicht wird geladen …</p>}
+      {caseData && <CaseSummaryCard caseData={caseData} />}
       <StatsSection
         evidenceCount={data.evidence.length}
         peopleCount={data.people.length}

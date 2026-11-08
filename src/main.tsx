@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router";
 import { App } from "./app/App";
-import { loadAllData } from "./data";
 
 const container = document.getElementById("react-root");
 
@@ -11,12 +10,11 @@ if (!container) {
 }
 
 const root = createRoot(container);
-const data = await loadAllData();
 
 root.render(
   <StrictMode>
     <HashRouter>
-      <App data={data} />
+      <App />
     </HashRouter>
   </StrictMode>,
 );

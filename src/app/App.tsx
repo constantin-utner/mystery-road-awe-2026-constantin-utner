@@ -1,16 +1,11 @@
 import { useNavigate } from "react-router";
 import type { PageName } from "./pageTypes";
-import type { AppData } from "../data";
 import { AppHeader } from "../components/layout/AppHeader";
 import { AppFooter } from "../components/layout/AppFooter";
 import { CurrentPage } from "./CurrentPage";
 import { BookmarkProvider } from "../context/BookmarkContext";
 
-type AppProps = {
-  data: AppData;
-};
-
-export function App({ data }: AppProps) {
+export function App() {
   const navigate = useNavigate();
 
   function navigateTo(page: PageName) {
@@ -23,7 +18,7 @@ export function App({ data }: AppProps) {
       <AppHeader />
       <main className="app-main">
         <BookmarkProvider>
-          <CurrentPage data={data} onNavigate={navigateTo} />
+          <CurrentPage onNavigate={navigateTo} />
         </BookmarkProvider>
       </main>
       <AppFooter />

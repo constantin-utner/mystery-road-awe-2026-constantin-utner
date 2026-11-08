@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import type { PageName } from "./pageTypes";
-import type { AppData } from "../data";
+import { prepareEvidenceForDisplay, type SharedData } from "../data";
 import { saveEvidenceReview } from "../storage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { EvidencePage } from "../pages/evidence/EvidencePage";
@@ -13,7 +13,6 @@ import { TimelinePage } from "../pages/timeline/TimelinePage";
 import { WorkspacePage } from "../pages/workspace/WorkspacePage";
 
 type CurrentPageProps = {
-  data: AppData;
   onNavigate: (page: PageName) => void;
 };
 
@@ -25,8 +24,9 @@ const pageTitles = new Map([
   ["workspace", "Workspace"],
 ]);
 
-export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
-  const [evidence, setEvidence] = useState(data.evidence);
+export function CurrentPage({ onNavigate }: CurrentPageProps) {
+  const [data, setData] = useState<SharedData | null>(null);
+  const [error, setError] = useState("");
   const { pathname } = useLocation();
   const [, section = ""] = pathname.toLowerCase().split("/");
   const pageTitle = pageTitles.get(section) ?? "Investigation Portal";
@@ -36,7 +36,51 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
     document.title = title;
   }, [title]);
 
-  function handleStatusChange(evidenceId: string, status: string) {
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const api = `${import.meta.env.BASE_URL}api`;
+        const responses = await Promise.all([
+          fetch(`${api}/people`),
+          fetch(`${api}/locations`),
+          fetch(`${api}/evidence`),
+          fetch(`${api}/timeline`),
+        ]);
+
+        const failedResponse = responses.find((response) => !response.ok);
+        if (failedResponse) {
+          throw new Error(`HTTP ${failedResponse.status}`);
+        }
+
+        const [people, locations, evidence, timeline] = await Promise.all(
+          responses.map((response) => response.json()),
+        );
+
+        setData({
+          people,
+          locations,
+          evidence: prepareEvidenceForDisplay(evidence),
+          timeline,
+        });
+      } catch {
+        setError("Die gemeinsamen Falldaten konnten nicht geladen werden.");
+      }
+    }
+
+    loadData();
+  }, []);
+
+  if (error) {
+    return <p role="alert">{error}</p>;
+  }
+
+  if (data === null) {
+    return <p>Falldaten werden geladen …</p>;
+  }
+
+  const { people, locations, evidence, timeline } = data;
+
+  const handleStatusChange = (evidenceId: string, status: string) => {
     const nextEvidence = evidence.map((item) => {
       if (item.id === evidenceId) {
         return {
@@ -48,7 +92,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
       return item;
     });
 
-    setEvidence(nextEvidence);
+    setData({ ...data, evidence: nextEvidence });
 
     const updatedEvidence = nextEvidence.find((item) => item.id === evidenceId);
 
@@ -59,9 +103,9 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
         updatedEvidence.relevance,
       );
     }
-  }
+  };
 
-  function handleRelevanceChange(evidenceId: string, relevance: string) {
+  const handleRelevanceChange = (evidenceId: string, relevance: string) => {
     const nextEvidence = evidence.map((item) => {
       if (item.id === evidenceId) {
         return {
@@ -73,7 +117,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
       return item;
     });
 
-    setEvidence(nextEvidence);
+    setData({ ...data, evidence: nextEvidence });
 
     const updatedEvidence = nextEvidence.find((item) => item.id === evidenceId);
 
@@ -84,11 +128,6 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
         updatedEvidence.relevance,
       );
     }
-  }
-
-  const currentData = {
-    ...data,
-    evidence: evidence,
   };
 
   return (
@@ -96,28 +135,28 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route
         path="/dashboard"
-        element={<DashboardPage data={currentData} onNavigate={onNavigate} />}
+        element={<DashboardPage data={data} onNavigate={onNavigate} />}
       />
       <Route path="/team" element={<PeopleLocationsPage />}>
         <Route index element={<Navigate to="people" replace />} />
-        <Route path="people" element={<PeopleView people={data.people} />} />
+        <Route path="people" element={<PeopleView people={people} />} />
         <Route
           path="people/:personId"
-          element={<PersonPage people={data.people} />}
+          element={<PersonPage people={people} />}
         />
         <Route
           path="locations"
-          element={<LocationsView locations={data.locations} />}
+          element={<LocationsView locations={locations} />}
         />
       </Route>
-      <Route path="/timeline" element={<TimelinePage />} />
+      <Route path="/timeline" element={<TimelinePage timeline={timeline} />} />
       <Route
         path="/evidence"
         element={
           <EvidencePage
             evidence={evidence}
-            people={data.people}
-            locations={data.locations}
+            people={people}
+            locations={locations}
             onStatusChange={handleStatusChange}
             onRelevanceChange={handleRelevanceChange}
           />
@@ -125,7 +164,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
       />
       <Route
         path="/workspace"
-        element={<WorkspacePage evidence={evidence} people={data.people} />}
+        element={<WorkspacePage evidence={evidence} people={people} />}
       />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
