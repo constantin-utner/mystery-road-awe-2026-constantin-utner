@@ -215,6 +215,17 @@ a:focus-visible {
   margin: 0;
 }
 
+.empty-state {
+  padding: 16px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-panel);
+}
+
+.empty-state p {
+  margin: 0;
+}
+
 /* Dashboard */
 .stat-grid {
   display: grid;

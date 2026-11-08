@@ -17,7 +17,14 @@ export function TimelinePage({ timeline }: TimelinePageProps) {
   return (
     <section>
       <h2>Timeline</h2>
-      <TimelineList events={visibleEvents} />
+      {timeline.length === 0 ? (
+        <div className="empty-state">
+          <h3>Noch keine Timeline-Einträge</h3>
+          <p>Für diesen Fall sind aktuell keine Ereignisse erfasst.</p>
+        </div>
+      ) : (
+        <TimelineList events={visibleEvents} />
+      )}
     </section>
   );
 }
