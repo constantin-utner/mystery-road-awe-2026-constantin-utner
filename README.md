@@ -1,58 +1,70 @@
 # Project ReMotion – Investigation Portal
 
-Investigate the failure of an AI-assisted rehabilitation robot.
+A browser-based investigation platform for uncovering the cause of an incident involving an AI-assisted rehabilitation robot.
 
 ## About
 
-Project ReMotion is a browser-based investigation platform built around a fictional incident.
-During a pre-demonstration calibration test, the AI-assisted rehabilitation robot **ReMotion**
-loaded the wrong calibration profile and triggered its emergency stop. This application lets an
-investigator review the evidence, people, locations, and timeline surrounding the incident, and
-build up a working hypothesis about what happened.
+Project ReMotion is a fictional investigation application in which a rehabilitation robot loads an incorrect calibration profile and triggers an emergency stop.
 
-This repository contains an existing vanilla-JavaScript (no frameworks used) investigation application. The system is
-functional but has accumulated technical debt and inconsistent implementation decisions. Your task
-during the course will be to analyse, maintain, refactor, migrate, and extend it.
+Users can explore evidence, people, locations, and events to reconstruct the incident and develop hypotheses.
 
-## Running the application
+Originally built with vanilla JavaScript, the application is being refactored, migrated to React, and extended as part of the **Advanced Web Engineering** course.
 
-This application uses `fetch()` to load its case data from local JSON files, so it must be served
-over HTTP — opening `index.html` directly from the filesystem (`file://`) will not work in most
-browsers.
+## Getting Started
 
-Any static file server will do. For example, from the project root:
+Install dependencies and start the Vite development server:
 
 ```bash
-# Python 3
-python -m http.server 8080
-
-# Node.js (no install required)
-npx serve .
-
-# VS Code
-# Use the "Live Server" extension
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8080` (or whatever port your server prints) in your browser.
+- **Vanilla JS:** Open the URL provided by Vite.
+- **React:** Append `/react.html` to the URL.
+
+Both applications currently load data from local JSON files.
+
+### Local Development API
+
+Start the Express API in a second terminal:
+
+```bash
+npm run dev:api
+```
+
+The API runs at `http://127.0.0.1:3001` and provides five GET endpoints:
+
+`/api/case`, `/api/evidence`, `/api/people`, `/api/locations`, `/api/timeline`
+
+All endpoints support optional parameters:
+
+- `?delay=1500` – Simulates a delayed response (up to 5000 ms).
+- `?error=true` – Simulates an HTTP 500 error.
+
+Example:
+
+```bash
+curl -i 'http://127.0.0.1:3001/api/evidence?delay=1500'
+```
+
+The API runs independently of the frontend and is only used for local development.
+
+### Build & Deployment
+
+```bash
+npm run build
+```
+
+The frontend is built into `dist/` and deployed to GitHub Pages. The Express API is not deployed.
 
 ## Features
 
-- **Dashboard** — case summary and key statistics calculated from the loaded case data.
-- **Evidence catalogue** — search, filter (by type, person, location, status, relevance), sort,
-  bookmark, and open detailed evidence records.
-- **People & Locations** — profile cards for the investigation team and the six key locations.
-- **Timeline** — chronological view of case events with filtering and links to related evidence.
-- **Investigator workspace** — bookmarked evidence, personal notes, and a hypothesis draft form.
-  Workspace data is saved to your browser's local storage and will still be there when you reload
-  the page.
+- **Dashboard:** Case overview and statistics.
+- **Evidence:** Search, filter, sort, and bookmark evidence.
+- **People & Locations:** Explore people and locations.
+- **Timeline:** Chronological overview of events.
+- **Workspace:** Manage bookmarks, notes, and hypotheses using `localStorage`.
 
-## Browser requirements
+## Project Status
 
-A recent version of any evergreen desktop browser (Chrome, Firefox, Edge, Safari). JavaScript must
-be enabled. The layout targets common desktop and tablet widths.
-
-## Project status
-
-This is an existing brownfield application, not a fresh scaffold. It works for everyday use, but
-you should expect to find rough edges, inconsistent patterns, and a handful of bugs as you work
-with it — that discovery process is part of the course.
+Active development as part of the **Advanced Web Engineering** course, focusing on refactoring, React migration, and modern web development practices.
