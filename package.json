@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run typecheck && vite",
+    "dev:api": "node server.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
