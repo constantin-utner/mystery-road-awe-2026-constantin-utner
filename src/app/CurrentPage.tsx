@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Navigate, Route, Routes } from "react-router";
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import type { PageName } from "./pageTypes";
 import type { AppData } from "../data";
 import { saveEvidenceReview } from "../storage";
@@ -17,8 +17,24 @@ type CurrentPageProps = {
   onNavigate: (page: PageName) => void;
 };
 
+const pageTitles = new Map([
+  ["dashboard", "Dashboard"],
+  ["evidence", "Evidence"],
+  ["team", "People & Locations"],
+  ["timeline", "Timeline"],
+  ["workspace", "Workspace"],
+]);
+
 export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
   const [evidence, setEvidence] = useState(data.evidence);
+  const { pathname } = useLocation();
+  const [, section = ""] = pathname.toLowerCase().split("/");
+  const pageTitle = pageTitles.get(section) ?? "Investigation Portal";
+  const title = `${pageTitle} | Project ReMotion`;
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
 
   function handleStatusChange(evidenceId: string, status: string) {
     const nextEvidence = evidence.map((item) => {
