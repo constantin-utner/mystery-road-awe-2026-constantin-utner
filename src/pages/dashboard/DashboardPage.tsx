@@ -52,7 +52,12 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
     <section>
       <h2>Case Dashboard</h2>
       <HowToUsePortal onNavigate={onNavigate} />
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <div className="load-error" role="alert">
+          <h3>Laden fehlgeschlagen</h3>
+          <p>{error}</p>
+        </div>
+      )}
       {!error && caseData === null && (
         <LoadingIndicator message="Fallübersicht wird geladen …" />
       )}

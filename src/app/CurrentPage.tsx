@@ -72,7 +72,12 @@ export function CurrentPage({ onNavigate }: CurrentPageProps) {
   }, []);
 
   if (error) {
-    return <p role="alert">{error}</p>;
+    return (
+      <div className="load-error" role="alert">
+        <h2>Laden fehlgeschlagen</h2>
+        <p>{error}</p>
+      </div>
+    );
   }
 
   if (data === null) {
