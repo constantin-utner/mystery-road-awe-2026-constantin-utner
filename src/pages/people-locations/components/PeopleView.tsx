@@ -7,7 +7,12 @@ type PeopleViewProps = {
 
 export function PeopleView({ people }: PeopleViewProps) {
   if (people.length === 0) {
-    return <p>No people available.</p>;
+    return (
+      <div className="empty-state">
+        <h3>Noch keine Personen erfasst</h3>
+        <p>Für diesen Fall sind aktuell keine Personen hinterlegt.</p>
+      </div>
+    );
   }
 
   return (

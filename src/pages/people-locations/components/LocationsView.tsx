@@ -6,6 +6,15 @@ type LocationsViewProps = {
 };
 
 export function LocationsView({ locations }: LocationsViewProps) {
+  if (locations.length === 0) {
+    return (
+      <div className="empty-state">
+        <h3>Noch keine Orte erfasst</h3>
+        <p>Für diesen Fall sind aktuell keine Orte hinterlegt.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="locations-grid">
       {locations.map((location) => (
