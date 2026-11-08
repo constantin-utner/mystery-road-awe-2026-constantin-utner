@@ -4,23 +4,37 @@ const app = express();
 const port = 3001;
 const dataDirectory = `${import.meta.dirname}/public/data`;
 
-app.get("/api/case", (_req, res) => {
+async function simulateApiConditions(req, res, next) {
+  const delay = Number(req.query.delay ?? 0);
+
+  if (delay > 0 && delay <= 5000) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  if (req.query.error === "true") {
+    return res.status(500).json({ message: "Simulierter Serverfehler" });
+  }
+
+  next();
+}
+
+app.get("/api/case", simulateApiConditions, (_req, res) => {
   res.sendFile(`${dataDirectory}/case.json`);
 });
 
-app.get("/api/evidence", (_req, res) => {
+app.get("/api/evidence", simulateApiConditions, (_req, res) => {
   res.sendFile(`${dataDirectory}/evidence.json`);
 });
 
-app.get("/api/people", (_req, res) => {
+app.get("/api/people", simulateApiConditions, (_req, res) => {
   res.sendFile(`${dataDirectory}/people.json`);
 });
 
-app.get("/api/locations", (_req, res) => {
+app.get("/api/locations", simulateApiConditions, (_req, res) => {
   res.sendFile(`${dataDirectory}/locations.json`);
 });
 
-app.get("/api/timeline", (_req, res) => {
+app.get("/api/timeline", simulateApiConditions, (_req, res) => {
   res.sendFile(`${dataDirectory}/timeline.json`);
 });
 
