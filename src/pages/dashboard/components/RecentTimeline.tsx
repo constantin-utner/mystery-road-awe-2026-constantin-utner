@@ -12,7 +12,12 @@ export function RecentTimeline({ timeline }: RecentTimelineProps) {
   return (
     <div className="dashboard-panel">
       <h3>Recent timeline events</h3>
-      {recentTimeline.length === 0 && <p>No timeline events loaded yet.</p>}
+      {recentTimeline.length === 0 && (
+        <div className="empty-state">
+          <h4>Noch keine Timeline-Einträge</h4>
+          <p>Neue Ereignisse erscheinen hier, sobald sie erfasst sind.</p>
+        </div>
+      )}
       {recentTimeline.map((event) => (
         <TimelineListItem key={event.id} event={event} />
       ))}

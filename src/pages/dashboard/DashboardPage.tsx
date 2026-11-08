@@ -19,6 +19,7 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
 
   const [caseData, setCaseData] = useState<CaseData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -30,10 +31,12 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
           throw new Error(`HTTP ${response.status}`);
         }
 
-        const result: CaseData = await response.json();
+        const result: CaseData | null = await response.json();
         setCaseData(result);
       } catch {
         setError("Die Fallübersicht konnte nicht geladen werden.");
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -58,8 +61,14 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
           <p>{error}</p>
         </div>
       )}
-      {!error && caseData === null && (
+      {!error && isLoading && (
         <LoadingIndicator message="Fallübersicht wird geladen …" />
+      )}
+      {!error && !isLoading && caseData === null && (
+        <div className="empty-state">
+          <h3>Keine Fallübersicht vorhanden</h3>
+          <p>Für diesen Fall ist aktuell keine Übersicht hinterlegt.</p>
+        </div>
       )}
       {caseData && <CaseSummaryCard caseData={caseData} />}
       <StatsSection
