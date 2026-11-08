@@ -19,7 +19,13 @@ export function PersonalNotesSection({
       </p>
       <div className="notes-list">
         {evidence.length === 0 && (
-          <p>No notes yet. Add one from an evidence item's detail view.</p>
+          <div className="empty-state">
+            <h4>Noch keine Notizen</h4>
+            <p>
+              Öffne einen Beweis in der Evidence-Ansicht und füge eine Notiz
+              hinzu.
+            </p>
+          </div>
         )}
 
         {evidence.map((item) => (

@@ -13,9 +13,10 @@ export function BookmarkedEvidenceSection({
       <h3>Bookmarked Evidence</h3>
       <div className="bookmarks-list">
         {evidence.length === 0 && (
-          <p>
-            No bookmarked evidence yet. Bookmark items from the Evidence view.
-          </p>
+          <div className="empty-state">
+            <h4>Noch keine Lesezeichen</h4>
+            <p>Markiere einen Beweis in der Evidence-Ansicht.</p>
+          </div>
         )}
 
         {evidence.map((item) => (
