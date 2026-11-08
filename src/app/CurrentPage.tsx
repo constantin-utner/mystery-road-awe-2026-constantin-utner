@@ -110,10 +110,7 @@ export function CurrentPage({ data, onNavigate }: CurrentPageProps) {
           element={<LocationsView locations={data.locations} />}
         />
       </Route>
-      <Route
-        path="/timeline"
-        element={<TimelinePage timeline={data.timeline} />}
-      />
+      <Route path="/timeline" element={<TimelinePage />} />
       <Route
         path="/evidence"
         element={
