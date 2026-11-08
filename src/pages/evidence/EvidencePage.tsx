@@ -164,7 +164,14 @@ export function EvidencePage({
         onSortChange={(value) => dispatch({ type: "SET_SORT", value })}
         onClearFilters={handleClearFilters}
       />
-      <EvidenceGrid evidence={sortedEvidence} />
+      {evidence.length === 0 ? (
+        <div className="empty-state">
+          <h3>Noch keine Beweise erfasst</h3>
+          <p>Für diesen Fall sind aktuell keine Beweise hinterlegt.</p>
+        </div>
+      ) : (
+        <EvidenceGrid evidence={sortedEvidence} />
+      )}
       {previewEvidence && (
         <EvidenceDetail
           evidence={previewEvidence}
