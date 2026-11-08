@@ -65,12 +65,7 @@ export function EvidencePage({
   onStatusChange,
   onRelevanceChange,
 }: EvidencePageProps) {
-  const [filterState, dispatch] = useReducer(
-    filterReducer,
-    initialFilterState,
-  );
-  console.log("EvidencePage rendert");
-
+  const [filterState, dispatch] = useReducer(filterReducer, initialFilterState);
   const {
     searchTerm,
     selectedType,
@@ -167,9 +162,7 @@ export function EvidencePage({
           dispatch({ type: "SET_FILTER", field: "selectedRelevance", value })
         }
         sortOrder={sortOrder}
-        onSortChange={(value) =>
-          dispatch({ type: "SET_SORT", value })
-        }
+        onSortChange={(value) => dispatch({ type: "SET_SORT", value })}
         onClearFilters={handleClearFilters}
       />
       <div>
