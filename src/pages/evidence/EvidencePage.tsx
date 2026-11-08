@@ -69,6 +69,8 @@ export function EvidencePage({
     filterReducer,
     initialFilterState,
   );
+  console.log("EvidencePage rendert");
+
   const {
     searchTerm,
     selectedType,
