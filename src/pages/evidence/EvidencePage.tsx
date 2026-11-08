@@ -3,7 +3,6 @@ import type { Evidence, Location, Person } from "../../data";
 import { EvidenceGrid } from "./components/EvidenceGrid";
 import { EvidenceFilters } from "./components/EvidenceFilters";
 import { EvidenceDetail } from "./components/EvidenceDetail";
-import { EvidenceLoadingIndicator } from "./components/EvidenceLoadingIndicator";
 
 type EvidencePageProps = {
   evidence: Evidence[];
@@ -165,10 +164,7 @@ export function EvidencePage({
         onSortChange={(value) => dispatch({ type: "SET_SORT", value })}
         onClearFilters={handleClearFilters}
       />
-      <div>
-        <EvidenceLoadingIndicator />
-        <EvidenceGrid evidence={sortedEvidence} />
-      </div>
+      <EvidenceGrid evidence={sortedEvidence} />
       {previewEvidence && (
         <EvidenceDetail
           evidence={previewEvidence}

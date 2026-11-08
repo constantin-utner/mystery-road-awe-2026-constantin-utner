@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router";
 import type { PageName } from "./pageTypes";
 import { prepareEvidenceForDisplay, type SharedData } from "../data";
 import { saveEvidenceReview } from "../storage";
+import { LoadingIndicator } from "../components/shared/LoadingIndicator";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { EvidencePage } from "../pages/evidence/EvidencePage";
 import { PeopleLocationsPage } from "../pages/people-locations/PeopleLocationsPage";
@@ -75,7 +76,7 @@ export function CurrentPage({ onNavigate }: CurrentPageProps) {
   }
 
   if (data === null) {
-    return <p>Falldaten werden geladen …</p>;
+    return <LoadingIndicator message="Falldaten werden geladen …" />;
   }
 
   const { people, locations, evidence, timeline } = data;

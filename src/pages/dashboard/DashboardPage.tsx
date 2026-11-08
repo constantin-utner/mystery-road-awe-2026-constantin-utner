@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { CaseData, SharedData } from "../../data";
+import { LoadingIndicator } from "../../components/shared/LoadingIndicator";
 import { CaseSummaryCard } from "./components/CaseSummaryCard";
 import { HowToUsePortal } from "./components/HowToUsePortal";
 import type { PageName } from "../../app/pageTypes";
@@ -52,7 +53,9 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
       <h2>Case Dashboard</h2>
       <HowToUsePortal onNavigate={onNavigate} />
       {error && <p role="alert">{error}</p>}
-      {!error && caseData === null && <p>Fallübersicht wird geladen …</p>}
+      {!error && caseData === null && (
+        <LoadingIndicator message="Fallübersicht wird geladen …" />
+      )}
       {caseData && <CaseSummaryCard caseData={caseData} />}
       <StatsSection
         evidenceCount={data.evidence.length}
