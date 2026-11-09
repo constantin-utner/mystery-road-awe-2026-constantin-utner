@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchJson } from "../api/fetchJson";
 
 export function useFetch<T>(url: string) {
   const [data, setData] = useState<T | null>(null);
@@ -14,13 +15,7 @@ export function useFetch<T>(url: string) {
 
     async function loadData() {
       try {
-        const response = await fetch(url, { signal: controller.signal });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: T | null = await response.json();
+        const result = await fetchJson<T>(url, controller.signal);
 
         if (!controller.signal.aborted) {
           setData(result);
