@@ -23,7 +23,7 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
     isLoading,
     error,
     isEmpty,
-  } = useFetch<CaseData>(`${import.meta.env.BASE_URL}api/case?delay=3000`);
+  } = useFetch<CaseData>(`${import.meta.env.BASE_URL}api/case`);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(

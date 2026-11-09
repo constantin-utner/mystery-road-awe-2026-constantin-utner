@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import type { PageName } from "./pageTypes";
-import { prepareEvidenceForDisplay, type SharedData } from "../data";
+import {
+  prepareEvidenceForDisplay,
+  type Evidence,
+  type Location,
+  type Person,
+  type SharedData,
+  type TimelineEvent,
+} from "../data";
+import { useFetch } from "../hooks/useFetch";
 import { saveEvidenceReview } from "../storage";
 import { LoadingIndicator } from "../components/shared/LoadingIndicator";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
@@ -26,8 +34,11 @@ const pageTitles = new Map([
 ]);
 
 export function CurrentPage({ onNavigate }: CurrentPageProps) {
-  const [data, setData] = useState<SharedData | null>(null);
-  const [error, setError] = useState("");
+  const api = `${import.meta.env.BASE_URL}api`;
+  const people = useFetch<Person[]>(`${api}/people`);
+  const locations = useFetch<Location[]>(`${api}/locations`);
+  const evidence = useFetch<Evidence[]>(`${api}/evidence`);
+  const timeline = useFetch<TimelineEvent[]>(`${api}/timeline`);
   const { pathname } = useLocation();
   const [, section = ""] = pathname.toLowerCase().split("/");
   const pageTitle = pageTitles.get(section) ?? "Investigation Portal";
@@ -37,53 +48,45 @@ export function CurrentPage({ onNavigate }: CurrentPageProps) {
     document.title = title;
   }, [title]);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const api = `${import.meta.env.BASE_URL}api`;
-        const responses = await Promise.all([
-          fetch(`${api}/people`),
-          fetch(`${api}/locations`),
-          fetch(`${api}/evidence`),
-          fetch(`${api}/timeline`),
-        ]);
+  const requests = [people, locations, evidence, timeline];
+  const hasError = requests.some((request) => request.error !== null);
+  const isLoading = requests.some((request) => request.isLoading);
 
-        const failedResponse = responses.find((response) => !response.ok);
-        if (failedResponse) {
-          throw new Error(`HTTP ${failedResponse.status}`);
-        }
-
-        const [people, locations, evidence, timeline] = await Promise.all(
-          responses.map((response) => response.json()),
-        );
-
-        setData({
-          people,
-          locations,
-          evidence: prepareEvidenceForDisplay(evidence),
-          timeline,
-        });
-      } catch {
-        setError("Die gemeinsamen Falldaten konnten nicht geladen werden.");
-      }
-    }
-
-    loadData();
-  }, []);
-
-  if (error) {
+  if (hasError) {
     return (
       <div className="load-error" role="alert">
         <h2>Laden fehlgeschlagen</h2>
-        <p>{error}</p>
+        <p>Die gemeinsamen Falldaten konnten nicht geladen werden.</p>
       </div>
     );
   }
 
-  if (data === null) {
+  if (isLoading) {
     return <LoadingIndicator message="Falldaten werden geladen …" />;
   }
 
+  return (
+    <LoadedPages
+      onNavigate={onNavigate}
+      initialData={{
+        people: people.data ?? [],
+        locations: locations.data ?? [],
+        evidence: evidence.data ?? [],
+        timeline: timeline.data ?? [],
+      }}
+    />
+  );
+}
+
+type LoadedPagesProps = CurrentPageProps & {
+  initialData: SharedData;
+};
+
+function LoadedPages({ initialData, onNavigate }: LoadedPagesProps) {
+  const [data, setData] = useState<SharedData>(() => ({
+    ...initialData,
+    evidence: prepareEvidenceForDisplay(initialData.evidence),
+  }));
   const { people, locations, evidence, timeline } = data;
 
   const handleStatusChange = (evidenceId: string, status: string) => {
