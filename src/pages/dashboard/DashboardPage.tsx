@@ -24,6 +24,8 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function loadCase() {
       setIsLoading(true);
       setError("");
@@ -32,6 +34,7 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
       try {
         const response = await fetch(
           `${import.meta.env.BASE_URL}api/case?id=${selectedCase}&delay=${delay}`,
+          { signal: controller.signal },
         );
 
         if (!response.ok) {
@@ -39,15 +42,25 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
         }
 
         const result: CaseData | null = await response.json();
-        setCaseData(result);
+        if (!controller.signal.aborted) {
+          setCaseData(result);
+        }
       } catch {
-        setError("Die Fallübersicht konnte nicht geladen werden.");
+        if (!controller.signal.aborted) {
+          setError("Die Fallübersicht konnte nicht geladen werden.");
+        }
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     }
 
     loadCase();
+
+    return () => {
+      controller.abort();
+    };
   }, [selectedCase]);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
