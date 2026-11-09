@@ -18,14 +18,21 @@ type DashboardPageProps = {
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
 
+  const [selectedCase, setSelectedCase] = useState<"a" | "b">("a");
   const [caseData, setCaseData] = useState<CaseData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadCase() {
+      setIsLoading(true);
+      setError("");
+      const delay = selectedCase === "a" ? 4000 : 200;
+
       try {
-        const response = await fetch(`${import.meta.env.BASE_URL}api/case`);
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}api/case?id=${selectedCase}&delay=${delay}`,
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -41,7 +48,7 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
     }
 
     loadCase();
-  }, []);
+  }, [selectedCase]);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(
@@ -54,6 +61,13 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   return (
     <section>
       <h2>Case Dashboard</h2>
+      <button type="button" onClick={() => setSelectedCase("a")}>
+        Fall A (4 s)
+      </button>
+      <button type="button" onClick={() => setSelectedCase("b")}>
+        Fall B (0,2 s)
+      </button>
+      <p>Ausgewählt: Fall {selectedCase.toUpperCase()}</p>
       <HowToUsePortal onNavigate={onNavigate} />
       {error && (
         <div className="load-error" role="alert">

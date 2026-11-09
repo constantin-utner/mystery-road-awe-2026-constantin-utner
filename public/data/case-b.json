@@ -1,0 +1,11 @@
+{
+  "caseId": "NIGHTWATCH-2026-11",
+  "title": "Project Nightwatch – Missing Sensor Data",
+  "subtitle": "Investigate a gap in the overnight monitoring logs.",
+  "status": "open",
+  "opened": "2026-11-02",
+  "summary": "A greenhouse monitoring station stopped recording temperature readings overnight. The station came back online before the morning shift. The team is investigating whether the gap came from a power outage or a scheduled firmware update.",
+  "location": "Campus Research Greenhouse",
+  "leadInvestigator": "Unassigned",
+  "notes": "Start by comparing the station's restart time with the maintenance log."
+}

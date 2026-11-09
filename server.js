@@ -18,8 +18,9 @@ async function simulateApiConditions(req, res, next) {
   next();
 }
 
-app.get("/api/case", simulateApiConditions, (_req, res) => {
-  res.sendFile(`${dataDirectory}/case.json`);
+app.get("/api/case", simulateApiConditions, (req, res) => {
+  const fileName = req.query.id === "b" ? "case-b.json" : "case.json";
+  res.sendFile(`${dataDirectory}/${fileName}`);
 });
 
 app.get("/api/evidence", simulateApiConditions, (_req, res) => {
