@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { CaseData, SharedData } from "../../data";
 import { LoadingIndicator } from "../../components/shared/LoadingIndicator";
 import { CaseSummaryCard } from "./components/CaseSummaryCard";
@@ -9,6 +8,7 @@ import { ReviewProgress } from "./components/ReviewProgress";
 import { RecentEvidence } from "./components/RecentEvidence";
 import { RecentTimeline } from "./components/RecentTimeline";
 import { useBookmarks } from "../../context/BookmarkContext";
+import { useFetch } from "../../hooks/useFetch";
 
 type DashboardPageProps = {
   data: SharedData;
@@ -18,30 +18,12 @@ type DashboardPageProps = {
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
 
-  const [caseData, setCaseData] = useState<CaseData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function loadCase() {
-      try {
-        const response = await fetch(`${import.meta.env.BASE_URL}api/case`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: CaseData | null = await response.json();
-        setCaseData(result);
-      } catch {
-        setError("Die Fallübersicht konnte nicht geladen werden.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadCase();
-  }, []);
+  const {
+    data: caseData,
+    isLoading,
+    error,
+    isEmpty,
+  } = useFetch<CaseData>(`${import.meta.env.BASE_URL}api/case?delay=3000`);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(
@@ -55,16 +37,14 @@ export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
     <section>
       <h2>Case Dashboard</h2>
       <HowToUsePortal onNavigate={onNavigate} />
-      {error && (
+      {error !== null && (
         <div className="load-error" role="alert">
           <h3>Laden fehlgeschlagen</h3>
-          <p>{error}</p>
+          <p>Die Fallübersicht konnte nicht geladen werden.</p>
         </div>
       )}
-      {!error && isLoading && (
-        <LoadingIndicator message="Fallübersicht wird geladen …" />
-      )}
-      {!error && !isLoading && caseData === null && (
+      {isLoading && <LoadingIndicator message="Fallübersicht wird geladen …" />}
+      {isEmpty && (
         <div className="empty-state">
           <h3>Keine Fallübersicht vorhanden</h3>
           <p>Für diesen Fall ist aktuell keine Übersicht hinterlegt.</p>
