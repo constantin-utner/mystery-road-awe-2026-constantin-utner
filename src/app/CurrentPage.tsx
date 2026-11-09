@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import type { PageName } from "./pageTypes";
+import { prepareEvidenceForDisplay, type SharedData } from "../data";
 import {
-  prepareEvidenceForDisplay,
-  type Evidence,
-  type Location,
-  type Person,
-  type SharedData,
-  type TimelineEvent,
-} from "../data";
+  getEvidence,
+  getLocations,
+  getPeople,
+  getTimeline,
+} from "../api/caseApi";
 import { useFetch } from "../hooks/useFetch";
 import { saveEvidenceReview } from "../storage";
 import { LoadingIndicator } from "../components/shared/LoadingIndicator";
@@ -34,11 +33,10 @@ const pageTitles = new Map([
 ]);
 
 export function CurrentPage({ onNavigate }: CurrentPageProps) {
-  const api = `${import.meta.env.BASE_URL}api`;
-  const people = useFetch<Person[]>(`${api}/people`);
-  const locations = useFetch<Location[]>(`${api}/locations`);
-  const evidence = useFetch<Evidence[]>(`${api}/evidence`);
-  const timeline = useFetch<TimelineEvent[]>(`${api}/timeline`);
+  const people = useFetch(getPeople);
+  const locations = useFetch(getLocations);
+  const evidence = useFetch(getEvidence);
+  const timeline = useFetch(getTimeline);
   const { pathname } = useLocation();
   const [, section = ""] = pathname.toLowerCase().split("/");
   const pageTitle = pageTitles.get(section) ?? "Investigation Portal";

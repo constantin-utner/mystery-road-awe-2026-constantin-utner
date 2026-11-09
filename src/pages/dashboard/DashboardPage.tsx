@@ -1,4 +1,5 @@
-import type { CaseData, SharedData } from "../../data";
+import type { SharedData } from "../../data";
+import { getCase } from "../../api/caseApi";
 import { LoadingIndicator } from "../../components/shared/LoadingIndicator";
 import { CaseSummaryCard } from "./components/CaseSummaryCard";
 import { HowToUsePortal } from "./components/HowToUsePortal";
@@ -18,12 +19,7 @@ type DashboardPageProps = {
 export function DashboardPage({ data, onNavigate }: DashboardPageProps) {
   const { bookmarkIds } = useBookmarks();
 
-  const {
-    data: caseData,
-    isLoading,
-    error,
-    isEmpty,
-  } = useFetch<CaseData>(`${import.meta.env.BASE_URL}api/case`);
+  const { data: caseData, isLoading, error, isEmpty } = useFetch(getCase);
 
   // Abgeleitete Werte werden bei jedem Render aus den aktuellen Props berechnet.
   const reviewedCount = data.evidence.filter(

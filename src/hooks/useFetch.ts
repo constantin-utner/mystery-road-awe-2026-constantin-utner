@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchJson } from "../api/fetchJson";
 
-export function useFetch<T>(url: string) {
+export function useFetch<T>(load: (signal: AbortSignal) => Promise<T | null>) {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +14,7 @@ export function useFetch<T>(url: string) {
 
     async function loadData() {
       try {
-        const result = await fetchJson<T>(url, controller.signal);
+        const result = await load(controller.signal);
 
         if (!controller.signal.aborted) {
           setData(result);
@@ -36,7 +35,7 @@ export function useFetch<T>(url: string) {
     loadData();
 
     return () => controller.abort();
-  }, [url]);
+  }, [load]);
 
   const isEmpty =
     !isLoading &&
